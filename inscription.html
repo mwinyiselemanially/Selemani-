@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Inscription | SELEMANI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12)}
+body{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom));color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(700px 500px at 8% 8%,rgba(139,92,246,.25),transparent),radial-gradient(700px 500px at 95% 90%,rgba(34,230,255,.16),transparent),var(--fond)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(34,230,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(34,230,255,.05) 1px,transparent 1px);background-size:38px 38px;-webkit-mask-image:radial-gradient(circle at 50% 30%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 30%,#000,transparent 75%)}
+.wrap{width:100%;max-width:420px}
+.retour{display:inline-block;margin-bottom:18px;color:var(--tx2);text-decoration:none;font-size:13px}
+.entete{text-align:center;margin-bottom:22px}
+.logo{width:68px;height:68px;margin:0 auto 14px;display:grid;place-items:center;border-radius:21px;font-size:38px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 36px rgba(34,230,255,.35)}
+.marque{font-weight:900;font-size:22px;letter-spacing:3px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sous{margin-top:6px;color:var(--tx2);font-size:14px}
+.carte{padding:26px 22px;border:1px solid var(--bd);border-radius:22px;background:rgba(255,255,255,.045);backdrop-filter:blur(10px);box-shadow:0 0 50px rgba(34,230,255,.08)}
+h2{text-align:center;font-size:20px;font-weight:850;margin-bottom:4px}
+.aide{text-align:center;color:var(--tx2);font-size:13px;line-height:1.6;margin:6px 0 4px}
+label{display:block;margin:16px 0 7px;font-size:13px;font-weight:600;color:#d8e3f8}
+.champ{position:relative}
+input[type=email],input[type=password],input[type=text]{width:100%;padding:14px;border:1px solid var(--bd);border-radius:14px;background:#05070d;color:#fff;font:inherit;font-size:15px;outline:none}
+input:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(34,230,255,.12)}
+input.bon{border-color:rgba(69,230,160,.6)}
+input.mauvais{border-color:rgba(255,77,109,.7)}
+.champ input{padding-right:50px}
+.oeil{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;font-size:18px;cursor:pointer;color:var(--tx2)}
+.indice{margin-top:6px;min-height:16px;font-size:12px;color:var(--tx2);overflow-wrap:anywhere}
+.indice.ok{color:#86efac}.indice.err{color:#ff9aaa}
+.force{display:flex;gap:5px;margin-top:8px}
+.force i{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.1);transition:.25s}
+.force.n1 i:nth-child(-n+1){background:#ff4d6d}
+.force.n2 i:nth-child(-n+2){background:#ffb347}
+.force.n3 i:nth-child(-n+3){background:#7ee787}
+.force.n4 i{background:#45e6a0}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:14px;margin-top:22px;border:0;border-radius:15px;font:inherit;font-size:15px;font-weight:800;color:#fff;text-decoration:none;cursor:pointer;background:linear-gradient(110deg,var(--cy),var(--vi),var(--mg));box-shadow:0 8px 28px rgba(139,92,246,.35);transition:.2s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.sec{background:rgba(255,255,255,.06);border:1px solid var(--bd);box-shadow:none}
+#message{display:none;margin-top:16px;padding:11px 12px;border-radius:12px;text-align:center;font-size:13.5px;line-height:1.55;overflow-wrap:anywhere}
+#message.ok{display:block;background:rgba(34,197,94,.14);color:#86efac}
+#message.err{display:block;background:rgba(255,77,109,.14);color:#ff9aaa}
+#message.info{display:block;background:rgba(34,230,255,.1);color:#a9eeff}
+.vue{display:none}.vue.on{display:block}
+.separateur{display:flex;align-items:center;gap:12px;margin:24px 0 4px;color:#6b768d;font-size:12px}
+.separateur::before,.separateur::after{content:"";flex:1;height:1px;background:var(--bd)}
+.succes{text-align:center}
+.succes .gros{font-size:52px;margin-bottom:8px}
+.succes p{color:var(--tx2);font-size:14px;line-height:1.7}
+.succes b{color:var(--cy);overflow-wrap:anywhere}
+.pied{margin-top:18px;text-align:center;color:#6b768d;font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <a class="retour" href="index.html">← Retour à l'accueil</a>
+
+  <div class="entete">
+    <div class="logo" aria-hidden="true">S</div>
+    <div class="marque">SELEMANI</div>
+    <p class="sous">Rejoins ta communauté.</p>
+  </div>
+
+  <main class="carte">
+
+    <section class="vue on" id="vueFormulaire">
+      <h2>Créer un compte</h2>
+      <p class="aide">Quelques secondes suffisent pour rejoindre SELEMANI.</p>
+
+      <form id="signupForm" novalidate>
+        <label for="nom">Nom complet</label>
+        <input type="text" id="nom" placeholder="Ton nom complet" autocomplete="name" maxlength="40" required>
+
+        <label for="pseudo">Nom d'utilisateur</label>
+        <input type="text" id="pseudo" placeholder="ex : selemani" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="30" required>
+        <div class="indice" id="indicePseudo">3 à 30 caractères : lettres minuscules, chiffres, point, tiret ou underscore.</div>
+
+        <label for="email">Adresse e-mail</label>
+        <input type="email" id="email" placeholder="exemple@email.com" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
+
+        <label for="password">Mot de passe</label>
+        <div class="champ">
+          <input type="password" id="password" placeholder="Au moins 8 caractères" autocomplete="new-password" required>
+          <button type="button" class="oeil" data-oeil="password" aria-label="Afficher le mot de passe">👁</button>
+        </div>
+        <div class="force" id="force" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="indice" id="indiceForce"></div>
+
+        <label for="confirmation">Confirmer le mot de passe</label>
+        <div class="champ">
+          <input type="password" id="confirmation" placeholder="Répète ton mot de passe" autocomplete="new-password" required>
+          <button type="button" class="oeil" data-oeil="confirmation" aria-label="Afficher le mot de passe">👁</button>
+        </div>
+        <div class="indice" id="indiceConfirm"></div>
+
+        <button type="submit" class="btn" id="signupButton">Créer mon compte</button>
+        <p id="message" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="separateur">Déjà membre ?</div>
+      <a class="btn sec" href="connexion.html" style="margin-top:14px">Se connecter</a>
+    </section>
+
+    <section class="vue succes" id="vueSucces">
+      <div class="gros">📬</div>
+      <h2>Vérifie ta boîte e-mail</h2>
+      <p style="margin-top:10px">Nous avons envoyé un lien de confirmation à <b id="emailEnvoye"></b>. Clique dessus pour activer ton compte, puis connecte-toi. Pense à regarder tes courriers indésirables.</p>
+      <button type="button" class="btn sec" id="renvoyer">Renvoyer l'e-mail</button>
+      <p id="messageSucces" style="margin-top:12px;font-size:13px"></p>
+      <a class="btn" href="connexion.html">Aller à la connexion</a>
+    </section>
+
+  </main>
+  <p class="pied">© <span id="annee"></span> SELEMANI</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+
+// Configuration du projet Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+const $ = id => document.getElementById(id);
+$("annee").textContent = new Date().getFullYear();
+
+const messageEl = $("message");
+function afficher(texte, type) { messageEl.textContent = texte; messageEl.className = type || ""; }
+
+if (!window.supabase) {
+    afficher("La bibliothèque Supabase n'a pas pu se charger. Vérifie ta connexion Internet et recharge la page.", "err");
+    throw new Error("supabase-js non chargé");
+}
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+/* ---------- Afficher / masquer les mots de passe ---------- */
+document.querySelectorAll("[data-oeil]").forEach(b => {
+    b.addEventListener("click", () => {
+        const champ = $(b.dataset.oeil);
+        const visible = champ.type === "text";
+        champ.type = visible ? "password" : "text";
+        b.textContent = visible ? "👁" : "🙈";
+    });
+});
+
+/* ---------- Nom d'utilisateur ---------- */
+const REGLE_PSEUDO = /^[a-z0-9_.-]{3,30}$/;
+let pseudoLibre = null;      // true / false / null (pas vérifié)
+let attentePseudo = null;
+let jeton = 0;
+
+function proposerPseudo(nom) {
+    return nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        .replace(/[^a-z0-9]+/g, ".").replace(/^\.+|\.+$/g, "").slice(0, 30);
+}
+$("nom").addEventListener("blur", () => {
+    if (!$("pseudo").value) {
+        const p = proposerPseudo($("nom").value);
+        if (p.length >= 3) { $("pseudo").value = p; verifierPseudo(); }
+    }
+});
+
+function indicePseudo(texte, type, classe) {
+    const i = $("indicePseudo");
+    i.textContent = texte;
+    i.className = "indice " + (type || "");
+    $("pseudo").className = classe || "";
+}
+
+async function verifierPseudo() {
+    const brut = $("pseudo").value;
+    const pseudo = brut.toLowerCase().replace(/\s+/g, "");
+    if (pseudo !== brut) $("pseudo").value = pseudo;
+    pseudoLibre = null;
+    clearTimeout(attentePseudo);
+
+    if (!pseudo) { indicePseudo("3 à 30 caractères : lettres minuscules, chiffres, point, tiret ou underscore.", "", ""); return; }
+    if (!REGLE_PSEUDO.test(pseudo)) {
+        indicePseudo("Utilise 3 à 30 caractères : a-z, 0-9, point, tiret ou underscore.", "err", "mauvais");
+        return;
+    }
+    indicePseudo("Vérification...", "", "");
+    const moi = ++jeton;
+    attentePseudo = setTimeout(async () => {
+        try {
+            const { data, error } = await supabaseClient.from("profils")
+                .select("id").ilike("nom_utilisateur", pseudo).limit(1);
+            if (moi !== jeton) return;
+            if (error) { indicePseudo("Disponibilité non vérifiée pour le moment.", "", ""); return; }
+            if (data && data.length) { pseudoLibre = false; indicePseudo("@" + pseudo + " est déjà pris. Essaie un autre nom.", "err", "mauvais"); }
+            else { pseudoLibre = true; indicePseudo("@" + pseudo + " est disponible ✓", "ok", "bon"); }
+        } catch (e) {
+            if (moi === jeton) indicePseudo("Disponibilité non vérifiée pour le moment.", "", "");
+        }
+    }, 400);
+}
+$("pseudo").addEventListener("input", verifierPseudo);
+
+/* ---------- Force du mot de passe ---------- */
+function niveau(mdp) {
+    if (!mdp) return 0;
+    let n = 0;
+    if (mdp.length >= 8) n++;
+    if (/[a-z]/.test(mdp) && /[A-Z]/.test(mdp)) n++;
+    if (/\d/.test(mdp)) n++;
+    if (/[^A-Za-z0-9]/.test(mdp) || mdp.length >= 14) n++;
+    return mdp.length < 8 ? Math.min(n, 1) : n;
+}
+const LIBELLES = ["", "Faible", "Moyen", "Bon", "Excellent"];
+$("password").addEventListener("input", () => {
+    const n = niveau($("password").value);
+    $("force").className = "force" + (n ? " n" + n : "");
+    $("indiceForce").textContent = n ? "Force : " + LIBELLES[n] + ($("password").value.length < 8 ? " (8 caractères minimum)" : "") : "";
+    verifierConfirmation();
+});
+function verifierConfirmation() {
+    const c = $("confirmation").value;
+    if (!c) { $("indiceConfirm").textContent = ""; $("confirmation").className = ""; return; }
+    const ok = c === $("password").value;
+    $("indiceConfirm").textContent = ok ? "Les mots de passe correspondent ✓" : "Les mots de passe ne correspondent pas.";
+    $("indiceConfirm").className = "indice " + (ok ? "ok" : "err");
+    $("confirmation").className = ok ? "bon" : "mauvais";
+}
+$("confirmation").addEventListener("input", verifierConfirmation);
+
+/* ---------- Messages d'erreur en français ---------- */
+function traduire(error) {
+    const m = String((error && error.message) || "").toLowerCase();
+    if (m.includes("already registered") || m.includes("already been registered")) return "Cet e-mail est déjà utilisé. Connecte-toi ou réinitialise ton mot de passe.";
+    if (m.includes("rate limit") || m.includes("too many") || (error && error.status === 429)) return "Trop de tentatives. Patiente quelques minutes avant de réessayer.";
+    if (m.includes("invalid") && m.includes("email")) return "Cette adresse e-mail n'est pas valide.";
+    if (m.includes("password should be at least") || m.includes("weak")) return "Le mot de passe est trop faible. Choisis-en un plus long et plus varié.";
+    if (m.includes("signups not allowed") || m.includes("signup is disabled")) return "Les inscriptions sont fermées pour le moment.";
+    if (m.includes("failed to fetch") || m.includes("network")) return "Impossible de joindre le serveur. Vérifie ta connexion Internet.";
+    return (error && error.message) || "Erreur inconnue. Réessaie.";
+}
+
+/* ---------- Inscription ---------- */
+let emailInscrit = "";
+const lienConfirmation = () => new URL("connexion.html", window.location.href).href;
+
+$("signupForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const nom = $("nom").value.trim();
+    const pseudo = $("pseudo").value.trim().toLowerCase();
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    const bouton = $("signupButton");
+
+    if (nom.length < 2) { afficher("Entre ton nom complet.", "err"); $("nom").focus(); return; }
+    if (!REGLE_PSEUDO.test(pseudo)) { afficher("Choisis un nom d'utilisateur valide (3 à 30 caractères : a-z, 0-9, . _ -).", "err"); $("pseudo").focus(); return; }
+    if (pseudoLibre === false) { afficher("Ce nom d'utilisateur est déjà pris.", "err"); $("pseudo").focus(); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { afficher("Entre une adresse e-mail valide.", "err"); $("email").focus(); return; }
+    if (password.length < 8) { afficher("Le mot de passe doit contenir au moins 8 caractères.", "err"); $("password").focus(); return; }
+    if (password !== $("confirmation").value) { afficher("Les deux mots de passe ne correspondent pas.", "err"); $("confirmation").focus(); return; }
+    if (!navigator.onLine) { afficher("Tu es hors ligne. Vérifie ta connexion Internet.", "err"); return; }
+
+    bouton.disabled = true;
+    bouton.textContent = "Création du compte...";
+    afficher("Création de ton compte...", "info");
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                emailRedirectTo: lienConfirmation(),
+                // Seulement de petits textes : la photo et la bio restent dans la table "profils".
+                data: { nom_complet: nom, full_name: nom, nom_utilisateur: pseudo, username: pseudo }
+            }
+        });
+        if (error) throw error;
+
+        // Supabase renvoie une liste d'identités vide quand l'e-mail existe déjà.
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            throw new Error("User already registered");
+        }
+
+        if (data.session) {
+            afficher("Inscription réussie ! Bienvenue sur SELEMANI.", "ok");
+            setTimeout(() => { window.location.href = "accueil.html"; }, 1000);
+            return;
+        }
+
+        emailInscrit = email;
+        $("emailEnvoye").textContent = email;
+        $("signupForm").reset();
+        document.querySelectorAll(".vue").forEach(v => v.classList.toggle("on", v.id === "vueSucces"));
+        return;
+    } catch (error) {
+        console.error("Erreur d'inscription :", error);
+        afficher("Échec de l'inscription : " + traduire(error), "err");
+    }
+    bouton.disabled = false;
+    bouton.textContent = "Créer mon compte";
+});
+
+/* ---------- Renvoyer l'e-mail de confirmation ---------- */
+let attenteRenvoi = null;
+$("renvoyer").addEventListener("click", async function () {
+    const bouton = this;
+    const msg = $("messageSucces");
+    if (!emailInscrit) return;
+    bouton.disabled = true;
+    const { error } = await supabaseClient.auth.resend({
+        type: "signup", email: emailInscrit, options: { emailRedirectTo: lienConfirmation() }
+    });
+    if (error) { msg.style.color = "#ff9aaa"; msg.textContent = "Envoi impossible : " + traduire(error); bouton.disabled = false; return; }
+    msg.style.color = "#86efac";
+    msg.textContent = "E-mail renvoyé. Vérifie aussi tes courriers indésirables.";
+    let reste = 60;
+    clearInterval(attenteRenvoi);
+    attenteRenvoi = setInterval(() => {
+        reste--;
+        bouton.textContent = "Renvoyer dans " + reste + " s";
+        if (reste <= 0) { clearInterval(attenteRenvoi); bouton.disabled = false; bouton.textContent = "Renvoyer l'e-mail"; }
+    }, 1000);
+});
+
+/* ---------- Déjà connecté : direction l'accueil ---------- */
+(async function () {
+    try {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data && data.session) window.location.replace("accueil.html");
+    } catch (e) { console.warn("Session non vérifiée :", e); }
+})();
+</script>
+</body>
+</html>

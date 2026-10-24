@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Notifications — SELEMANI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12)}
+html,body{height:100%;overflow:hidden;background:var(--fond);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{display:flex;justify-content:center;background:radial-gradient(700px 500px at 10% 20%,rgba(139,92,246,.22),transparent),radial-gradient(700px 500px at 90% 80%,rgba(34,230,255,.16),transparent),var(--fond)}
+button,a{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{opacity:.5;cursor:wait}
+.app{position:relative;width:100%;max-width:480px;height:100dvh;display:flex;flex-direction:column;background:#05060c;box-shadow:0 0 80px rgba(34,230,255,.12),0 0 0 1px var(--bd);overflow:hidden}
+.barre{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 10px;background:rgba(5,6,12,.92);backdrop-filter:blur(16px)}
+.logo{font-weight:900;font-size:18px;letter-spacing:2px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.titre{flex:1;text-align:right;font-weight:800;font-size:16px}
+.icone{width:38px;height:38px;border-radius:12px;border:1px solid var(--bd);display:grid;place-items:center;font-size:16px}
+.filtres{display:flex;gap:8px;padding:6px 14px 12px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--bd)}
+.filtres::-webkit-scrollbar{display:none}
+.filtre{flex-shrink:0;padding:8px 14px;border-radius:99px;border:1px solid var(--bd);font-size:12.5px;font-weight:700;color:var(--tx2)}
+.filtre.on{color:#fff;border-color:transparent;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg))}
+.liste{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+.liste::-webkit-scrollbar{display:none}
+.groupe{padding:16px 16px 6px;font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--tx2);text-transform:uppercase}
+.notif{position:relative;display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.notif:active{background:rgba(255,255,255,.05)}
+.notif.nonlu{background:linear-gradient(90deg,rgba(34,230,255,.08),rgba(139,92,246,.05))}
+.notif.nonlu::before{content:"";position:absolute;left:5px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.avw{position:relative;width:48px;height:48px;flex-shrink:0}
+.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:18px;overflow:hidden;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg))}
+.av img{width:100%;height:100%;object-fit:cover}
+.pic{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;border:2px solid #05060c}
+.pic.like{background:var(--mg)}.pic.commentaire,.pic.reponse{background:var(--vi)}.pic.abonnement{background:var(--cy);color:#04050a;font-weight:900}
+.corps{flex:1;min-width:0}
+.texte{font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.texte b{font-weight:800}
+.extrait{margin-top:4px;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12.5px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.temps{margin-top:3px;font-size:11px;color:var(--tx2)}
+.suivre{flex-shrink:0;padding:8px 13px;border-radius:12px;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg))}
+.suivre.fait{background:#141a2b;border:1px solid var(--bd);color:var(--tx2)}
+.vide{text-align:center;color:var(--tx2);padding:70px 28px;line-height:1.8;font-size:14px;white-space:pre-line}
+.vide .gros{font-size:42px;display:block;margin-bottom:10px}
+.nav{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:space-around;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:rgba(4,5,10,.92);border-top:1px solid var(--bd);backdrop-filter:blur(18px)}
+.nav a{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;color:var(--tx2);text-decoration:none;font-size:10px}
+.nav .i{font-size:21px}.nav .actif{color:#fff}
+.nav .plus .i{width:47px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:25px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 20px rgba(34,230,255,.5)}
+.badge{position:absolute;top:-3px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--mg);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 10px rgba(255,46,147,.7)}
+.cache{display:none!important}
+.message{position:absolute;z-index:70;left:14px;right:14px;top:calc(64px + env(safe-area-inset-top));padding:11px;border-radius:12px;font-size:13px;overflow-wrap:anywhere;display:none}
+.message.erreur{display:block;background:rgba(255,46,100,.95)}
+.message.succes{display:block;background:rgba(34,197,94,.95)}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="cachelocal.js"></script>
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<div class="app">
+<div id="message" class="message" role="status" aria-live="polite"></div>
+
+<header class="barre">
+  <div class="logo">SELEMANI</div>
+  <div class="titre">Notifications</div>
+  <button class="icone" id="toutLire" type="button" aria-label="Tout marquer comme lu" title="Tout marquer comme lu">✓</button>
+  <button class="icone" id="toutEffacer" type="button" aria-label="Tout effacer" title="Tout effacer">🗑</button>
+</header>
+
+<div class="filtres" id="filtres">
+  <button class="filtre on" data-f="tout" type="button">Tout</button>
+  <button class="filtre" data-f="like" type="button">❤ J'aime</button>
+  <button class="filtre" data-f="commentaire" type="button">💬 Commentaires</button>
+  <button class="filtre" data-f="abonnement" type="button">＋ Abonnés</button>
+</div>
+
+<main class="liste" id="liste"><div class="vide">Chargement...</div></main>
+
+<nav class="nav">
+  <a href="accueil.html"><span class="i">⌂</span>Accueil</a>
+  <a href="messages.html"><span class="i">✉</span>Messages<span class="badge cache" id="badgeMsg"></span></a>
+  <a href="creer.html" class="plus"><span class="i">+</span><span>Créer</span></a>
+  <a href="notifications.html" class="actif"><span class="i">🔔</span>Notifs<span class="badge cache" id="badgeNotif"></span></a>
+  <a href="profil.html"><span class="i">♙</span>Profil</a>
+</nav>
+</div>
+
+<script>
+"use strict";
+
+// Configuration Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+const $ = id => document.getElementById(id);
+const el = (tag, classe, texte) => {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+};
+
+if (!window.supabase) {
+  $("liste").replaceChildren(el("div", "vide", "La bibliothèque Supabase n'a pas pu se charger.\nVérifie ta connexion et recharge."));
+  throw new Error("supabase-js non chargé");
+}
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let moi = null;
+let notifs = [];
+let profils = {};
+let abonnes = new Set();
+let filtre = "tout";
+let canal = null;
+let minuterie = null;
+
+function notice(texte, type = "erreur") {
+  const m = $("message");
+  m.textContent = texte;
+  m.className = "message " + type;
+  clearTimeout(minuterie);
+  minuterie = setTimeout(() => { m.className = "message"; }, 3500);
+}
+
+function lienPhoto(v) { return typeof v === "string" && /^https?:\/\//i.test(v) ? v : ""; }
+function nomDe(id) {
+  const p = profils[id];
+  return p && p.nom_utilisateur ? "@" + p.nom_utilisateur : "Un utilisateur";
+}
+function remplirAvatar(div, id) {
+  div.replaceChildren();
+  const url = lienPhoto(profils[id] && profils[id].photo_profil);
+  const lettre = (nomDe(id).replace(/^@/, "").charAt(0) || "U").toUpperCase();
+  if (url) {
+    const img = document.createElement("img");
+    img.src = url; img.alt = "";
+    img.onerror = () => { div.textContent = lettre; };
+    div.appendChild(img);
+  } else {
+    div.textContent = lettre;
+  }
+}
+
+function tempsRelatif(d) {
+  const s = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
+  if (s < 60) return "à l'instant";
+  if (s < 3600) return Math.floor(s / 60) + " min";
+  if (s < 86400) return Math.floor(s / 3600) + " h";
+  if (s < 7 * 86400) return Math.floor(s / 86400) + " j";
+  return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+}
+function groupe(d) {
+  const x = new Date(d), a = new Date();
+  const debut = new Date(a.getFullYear(), a.getMonth(), a.getDate()).getTime();
+  const t = x.getTime();
+  if (t >= debut) return "Aujourd'hui";
+  if (t >= debut - 86400000) return "Hier";
+  if (t >= debut - 6 * 86400000) return "Cette semaine";
+  return "Plus ancien";
+}
+
+const TEXTES = {
+  like: "a aimé ta publication",
+  commentaire: "a commenté ta publication",
+  reponse: "a répondu à ton commentaire",
+  abonnement: "a commencé à te suivre"
+};
+const ICONES = { like: "❤", commentaire: "💬", reponse: "↩", abonnement: "＋" };
+const VIDES = {
+  tout: "Aucune notification pour le moment.\nQuand quelqu'un aimera, commentera ou te suivra, ça apparaîtra ici.",
+  like: "Aucun j'aime pour le moment.",
+  commentaire: "Aucun commentaire pour le moment.",
+  abonnement: "Aucun nouvel abonné pour le moment."
+};
+
+/* ---------- Affichage ---------- */
+function dessiner() {
+  const liste = $("liste");
+  const visibles = notifs.filter(n => filtre === "tout" || n.type === filtre || (filtre === "commentaire" && n.type === "reponse"));
+  liste.replaceChildren();
+
+  if (!visibles.length) {
+    const v = el("div", "vide");
+    v.append(el("span", "gros", "🔔"), document.createTextNode(VIDES[filtre]));
+    liste.appendChild(v);
+    return;
+  }
+
+  let dernierGroupe = "";
+  visibles.forEach(n => {
+    const g = groupe(n.created_at);
+    if (g !== dernierGroupe) { liste.appendChild(el("div", "groupe", g)); dernierGroupe = g; }
+
+    const ligne = el("div", "notif" + (n.lu ? "" : " nonlu"));
+    ligne.setAttribute("role", "button");
+    ligne.tabIndex = 0;
+
+    const avw = el("div", "avw");
+    const av = el("div", "av");
+    remplirAvatar(av, n.acteur_id);
+    avw.append(av, el("span", "pic " + n.type, ICONES[n.type] || "•"));
+
+    const corps = el("div", "corps");
+    const texte = el("div", "texte");
+    texte.append(el("b", "", nomDe(n.acteur_id)), document.createTextNode(" " + (TEXTES[n.type] || "a interagi avec toi")));
+    corps.appendChild(texte);
+    if ((n.type === "commentaire" || n.type === "reponse") && n.contenu) corps.appendChild(el("div", "extrait", "« " + n.contenu + " »"));
+    corps.appendChild(el("div", "temps", tempsRelatif(n.created_at)));
+
+    ligne.append(avw, corps);
+
+    // Suivre en retour
+    if (n.type === "abonnement" && n.acteur_id !== moi.id) {
+      const b = el("button", "suivre" + (abonnes.has(n.acteur_id) ? " fait" : ""), abonnes.has(n.acteur_id) ? "Abonné ✓" : "Suivre");
+      b.type = "button";
+      b.addEventListener("click", async e => {
+        e.stopPropagation();
+        b.disabled = true;
+        const suit = abonnes.has(n.acteur_id);
+        const { error } = suit
+          ? await db.from("abonnements").delete().eq("abonne_id", moi.id).eq("suivi_id", n.acteur_id)
+          : await db.from("abonnements").insert({ abonne_id: moi.id, suivi_id: n.acteur_id });
+        b.disabled = false;
+        if (error && error.code !== "23505") { notice("Abonnement impossible : " + error.message); return; }
+        if (suit) abonnes.delete(n.acteur_id); else abonnes.add(n.acteur_id);
+        dessiner();
+      });
+      ligne.appendChild(b);
+    }
+
+    const ouvrir = async () => {
+      if (!n.lu) await marquerLu([n.id]);
+      if (n.type === "abonnement") {
+        location.href = "profil.html?id=" + encodeURIComponent(n.acteur_id);
+      } else if (n.publication_id) {
+        location.href = "accueil.html#publication-" + encodeURIComponent(n.publication_id);
+      }
+    };
+    ligne.addEventListener("click", ouvrir);
+    ligne.addEventListener("keydown", e => { if (e.key === "Enter") ouvrir(); });
+    liste.appendChild(ligne);
+  });
+}
+
+/* ---------- Données ---------- */
+async function charger() {
+  const { data, error } = await db.from("notifications")
+    .select("id,acteur_id,type,publication_id,contenu,lu,created_at")
+    .eq("user_id", moi.id)
+    .order("created_at", { ascending: false })
+    .limit(80);
+
+  if (error) {
+    const copie = CacheSelemani.horsLigne(error) ? CacheSelemani.get("notifs") : null;
+    if (copie) {
+      notifs = copie.d.notifs || [];
+      Object.assign(profils, copie.d.profils || {});
+      abonnes = new Set(copie.d.abonnes || []);
+      dessiner();
+      notice("Hors ligne : notifications enregistrées le " + CacheSelemani.dateTexte(copie.t) + ".", "succes");
+      return;
+    }
+    $("liste").replaceChildren(el("div", "vide", "Impossible de charger les notifications.\n" + error.message));
+    return;
+  }
+  notifs = data || [];
+
+  // Les notifications des personnes bloquées ne s'affichent pas.
+  try {
+    const bl = await db.from("blocages").select("bloque_id").eq("bloqueur_id", moi.id);
+    if (!bl.error) {
+      const interdits = new Set((bl.data || []).map(x => x.bloque_id));
+      notifs = notifs.filter(n => !interdits.has(n.acteur_id));
+    }
+  } catch (e) { /* ignoré */ }
+
+  const ids = [...new Set(notifs.map(n => n.acteur_id).filter(Boolean))].filter(i => !profils[i]);
+  if (ids.length) {
+    const r = await db.from("profils").select("id,nom_utilisateur,photo_profil").in("id", ids);
+    if (r.error) console.warn("Profils :", r.error.message);
+    (r.data || []).forEach(p => { profils[p.id] = p; });
+  }
+
+  const ab = await db.from("abonnements").select("suivi_id").eq("abonne_id", moi.id);
+  if (!ab.error) abonnes = new Set((ab.data || []).map(a => a.suivi_id));
+
+  dessiner();
+  majBadges();
+  CacheSelemani.set("notifs", {
+    notifs,
+    profils: Object.fromEntries(notifs.map(n => n.acteur_id).filter(Boolean).map(i => [i, profils[i]]).filter(x => x[1])),
+    abonnes: [...abonnes]
+  });
+}
+
+async function marquerLu(ids) {
+  const { error } = await db.from("notifications").update({ lu: true }).in("id", ids).eq("user_id", moi.id);
+  if (error) { notice("Impossible de marquer comme lu : " + error.message); return; }
+  notifs.forEach(n => { if (ids.includes(n.id)) n.lu = true; });
+  majBadges();
+}
+
+$("toutLire").addEventListener("click", async () => {
+  const ids = notifs.filter(n => !n.lu).map(n => n.id);
+  if (!ids.length) { notice("Tout est déjà lu.", "succes"); return; }
+  await marquerLu(ids);
+  dessiner();
+  notice("Toutes les notifications sont lues.", "succes");
+});
+
+$("toutEffacer").addEventListener("click", async () => {
+  if (!notifs.length) return;
+  if (!confirm("Effacer toutes tes notifications ?")) return;
+  const { error } = await db.from("notifications").delete().eq("user_id", moi.id);
+  if (error) { notice("Suppression impossible : " + error.message); return; }
+  notifs = [];
+  dessiner();
+  majBadges();
+  notice("Notifications effacées.", "succes");
+});
+
+document.querySelectorAll(".filtre").forEach(b => {
+  b.addEventListener("click", () => {
+    filtre = b.dataset.f;
+    document.querySelectorAll(".filtre").forEach(x => x.classList.toggle("on", x === b));
+    dessiner();
+  });
+});
+
+/* ---------- Pastilles du menu ---------- */
+async function majBadges() {
+  try {
+    const n = await db.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", moi.id).eq("lu", false);
+    const bn = $("badgeNotif");
+    if (!n.error) { bn.textContent = n.count > 99 ? "99+" : String(n.count || 0); bn.classList.toggle("cache", !n.count); }
+    const m = await db.from("messages").select("id", { count: "exact", head: true }).eq("destinataire_id", moi.id).eq("lu", false);
+    const bm = $("badgeMsg");
+    if (!m.error) { bm.textContent = m.count > 99 ? "99+" : String(m.count || 0); bm.classList.toggle("cache", !m.count); }
+  } catch (e) { /* sans importance */ }
+}
+
+/* ---------- Temps réel ---------- */
+function activerTempsReel() {
+  if (canal) db.removeChannel(canal);
+  canal = db.channel("notifs-" + moi.id)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "notifications", filter: "user_id=eq." + moi.id },
+      () => charger())
+    .subscribe();
+}
+// Secours si le temps réel n'est pas activé sur la table
+setInterval(() => { if (!document.hidden && moi && navigator.onLine) charger(); }, 20000);
+window.addEventListener("online", () => { if (moi) charger(); });
+
+/* ---------- Démarrage ---------- */
+(async function demarrer() {
+  let session = null, erreur = null;
+  try {
+    const r = await db.auth.getSession();
+    session = r.data && r.data.session;
+    erreur = r.error;
+  } catch (e) { erreur = e; }
+  // Hors ligne : on utilise la session enregistrée pour afficher le contenu sauvegardé.
+  if (erreur && CacheSelemani.horsLigne(erreur)) {
+    const local = CacheSelemani.utilisateurLocal();
+    if (local) moi = local;
+  }
+  if (!moi) {
+    if (erreur) { $("liste").replaceChildren(el("div", "vide", "Erreur de session : " + erreur.message)); return; }
+    moi = session ? session.user : null;
+    if (!moi) { location.replace("connexion.html"); return; }
+  }
+  CacheSelemani.init(moi.id);
+  await charger();
+  activerTempsReel();
+})();
+</script>
+</body>
+</html>

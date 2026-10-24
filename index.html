@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<meta name="description" content="SELEMANI : partage tes photos et vidéos, discute en privé, suis tes amis et fais vivre ta communauté.">
+<title>SELEMANI — Connecte le monde</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322e6ff'/%3E%3Cstop offset='1' stop-color='%23ff2e93'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='46' font-size='40' font-weight='800' text-anchor='middle' fill='white' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12);--carte:rgba(255,255,255,.045)}
+html{scroll-behavior:smooth}
+body{min-height:100vh;color:var(--tx);overflow-x:hidden;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(700px 500px at 8% 8%,rgba(139,92,246,.25),transparent),radial-gradient(700px 500px at 95% 40%,rgba(34,230,255,.16),transparent),radial-gradient(600px 500px at 10% 90%,rgba(255,46,147,.13),transparent),var(--fond)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(34,230,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(34,230,255,.05) 1px,transparent 1px);background-size:38px 38px;-webkit-mask-image:radial-gradient(circle at 50% 20%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 20%,#000,transparent 75%)}
+.page{width:100%;max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 22px calc(30px + env(safe-area-inset-bottom))}
+section{margin-top:56px}
+h2{font-size:22px;font-weight:850;letter-spacing:-.5px;text-align:center;margin-bottom:6px}
+.sous{text-align:center;color:var(--tx2);font-size:13.5px;line-height:1.7;margin-bottom:22px}
+
+.hero{text-align:center}
+.logo{width:80px;height:80px;margin:0 auto 26px;display:grid;place-items:center;border-radius:24px;font-size:44px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 44px rgba(34,230,255,.4),0 12px 38px rgba(255,46,147,.25);animation:flotte 4s ease-in-out infinite}
+@keyframes flotte{50%{transform:translateY(-6px)}}
+.badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;padding:8px 14px;border:1px solid rgba(34,230,255,.35);border-radius:99px;background:rgba(34,230,255,.08);color:#a9eeff;font-size:12px;font-weight:700}
+.point{width:7px;height:7px;border-radius:50%;background:#45e6a0;box-shadow:0 0 8px #45e6a0}
+h1{margin-bottom:16px;font-size:clamp(32px,8.5vw,44px);font-weight:900;line-height:1.12;letter-spacing:-1.8px}
+h1 span{background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.description{max-width:340px;margin:0 auto 30px;color:var(--tx2);font-size:15px;line-height:1.8}
+.actions{display:grid;gap:12px}
+.btn{min-height:54px;padding:15px 20px;display:flex;justify-content:center;align-items:center;gap:8px;border:1px solid transparent;border-radius:16px;font:inherit;font-size:15px;font-weight:800;text-decoration:none;color:#fff;transition:.2s}
+.btn-p{background:linear-gradient(110deg,var(--cy),var(--vi),var(--mg));box-shadow:0 8px 30px rgba(139,92,246,.35)}
+.btn-s{background:var(--carte);border-color:var(--bd)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible,summary:focus-visible{outline:2px solid var(--cy);outline-offset:3px}
+.connecte{display:none;margin-bottom:14px;color:var(--tx2);font-size:13px}
+.connecte b{color:var(--cy)}
+
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.carte{padding:18px 14px;border:1px solid var(--bd);border-radius:18px;background:var(--carte);backdrop-filter:blur(8px)}
+.carte .i{width:44px;height:44px;margin-bottom:12px;display:grid;place-items:center;border-radius:14px;font-size:22px;background:linear-gradient(135deg,rgba(34,230,255,.18),rgba(139,92,246,.22),rgba(255,46,147,.18));border:1px solid var(--bd)}
+.carte h3{font-size:14px;font-weight:800;margin-bottom:6px}
+.carte p{font-size:12px;line-height:1.6;color:var(--tx2)}
+
+.etapes{display:grid;gap:12px;counter-reset:e}
+.etape{position:relative;padding:16px 16px 16px 68px;border:1px solid var(--bd);border-radius:18px;background:var(--carte)}
+.etape::before{counter-increment:e;content:counter(e);position:absolute;left:16px;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;border-radius:12px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg))}
+.etape b{display:block;font-size:14px;margin-bottom:3px}
+.etape span{font-size:12.5px;line-height:1.6;color:var(--tx2)}
+
+details{margin-bottom:10px;border:1px solid var(--bd);border-radius:14px;background:var(--carte)}
+summary{padding:15px 16px;cursor:pointer;font-size:14px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--cy);font-size:18px;line-height:1}
+details[open] summary::after{content:"−"}
+details p{padding:0 16px 15px;font-size:13px;line-height:1.7;color:var(--tx2)}
+
+.final{text-align:center;padding:28px 18px;border:1px solid rgba(34,230,255,.3);border-radius:22px;background:linear-gradient(135deg,rgba(34,230,255,.09),rgba(139,92,246,.1),rgba(255,46,147,.09))}
+.final h2{margin-bottom:8px}
+.final .actions{margin-top:18px}
+footer{margin-top:40px;text-align:center;color:#6b768d;font-size:12px;line-height:2}
+footer a{color:var(--tx2);text-decoration:none;margin:0 8px}
+
+.apparait{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.apparait.vu{opacity:1;transform:none}
+@media (max-width:360px){.grille{grid-template-columns:1fr}h1{font-size:30px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.apparait{opacity:1;transform:none}}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<main class="page">
+
+<header class="hero">
+  <div class="logo" aria-label="Logo SELEMANI">S</div>
+  <div class="badge"><span class="point"></span>Votre réseau, votre communauté</div>
+  <h1>Le monde est plus proche avec <span>SELEMANI.</span></h1>
+  <p class="description">Partage tes moments en photo et en vidéo, discute en privé, suis tes amis et fais grandir ta communauté.</p>
+
+  <p class="connecte" id="connecte">Tu es connecté en tant que <b id="monNom"></b></p>
+  <div class="actions" id="actions">
+    <a href="inscription.html" class="btn btn-p" id="btnPrincipal">Créer un compte</a>
+    <a href="connexion.html" class="btn btn-s" id="btnSecondaire">Se connecter</a>
+    <button type="button" class="btn btn-s" id="btnInstaller" style="display:none">📲 Installer l'application</button>
+  </div>
+</header>
+
+<section class="apparait" aria-labelledby="t-fonctions">
+  <h2 id="t-fonctions">Tout pour te connecter</h2>
+  <p class="sous">Les fonctions de SELEMANI, réunies au même endroit.</p>
+  <div class="grille">
+    <article class="carte"><div class="i">📸</div><h3>Photos et vidéos</h3><p>Un fil vertical plein écran, avec lecture automatique des vidéos.</p></article>
+    <article class="carte"><div class="i">❤️</div><h3>J'aime et commentaires</h3><p>Réagis d'un double-clic et discute sous chaque publication.</p></article>
+    <article class="carte"><div class="i">✉️</div><h3>Messages et vocaux</h3><p>Des discussions privées, écrites ou en message vocal.</p></article>
+    <article class="carte"><div class="i">👥</div><h3>Abonnements</h3><p>Suis tes profils préférés et retrouve-les dans l'onglet Abonnés.</p></article>
+    <article class="carte"><div class="i">🔔</div><h3>Notifications</h3><p>Sois prévenu dès qu'on aime, commente ou te suit.</p></article>
+    <article class="carte"><div class="i">🔍</div><h3>Recherche</h3><p>Trouve un profil par son nom d'utilisateur en quelques lettres.</p></article>
+    <article class="carte"><div class="i">🧑‍🚀</div><h3>Profil personnalisé</h3><p>Ta photo, ta bio, tes statistiques et tes publications.</p></article>
+    <article class="carte"><div class="i">🔗</div><h3>Partage facile</h3><p>Envoie le lien d'une publication ou d'un profil à tes amis.</p></article>
+  </div>
+</section>
+
+<section class="apparait" aria-labelledby="t-etapes">
+  <h2 id="t-etapes">Comment ça marche</h2>
+  <p class="sous">Trois étapes pour commencer.</p>
+  <div class="etapes">
+    <div class="etape"><b>Crée ton compte</b><span>Inscris-toi en quelques secondes.</span></div>
+    <div class="etape"><b>Complète ton profil</b><span>Ajoute ta photo, ton nom d'utilisateur et ta bio.</span></div>
+    <div class="etape"><b>Publie, suis et discute</b><span>Partage un moment, suis des profils et écris-leur.</span></div>
+  </div>
+</section>
+
+<section class="apparait" aria-labelledby="t-faq">
+  <h2 id="t-faq">Questions fréquentes</h2>
+  <p class="sous">Les réponses rapides pour bien démarrer.</p>
+  <details><summary>Comment suivre quelqu'un ?</summary><p>Sur une publication, touche le petit + sur la photo de l'auteur. Tu peux aussi toucher sa photo pour voir son profil, puis « Suivre ».</p></details>
+  <details><summary>Comment envoyer un message vocal ?</summary><p>Ouvre une conversation dans Messages, touche le micro, parle, puis envoie. Tu peux mettre en pause ou annuler avant l'envoi.</p></details>
+  <details><summary>Comment changer ma photo de profil ?</summary><p>Va dans Profil, touche « Modifier le profil », choisis une image, puis enregistre.</p></details>
+  <details><summary>Comment retrouver quelqu'un ?</summary><p>Utilise la loupe en haut de l'accueil ou le bouton d'écriture dans Messages, et tape son nom d'utilisateur.</p></details>
+  <details><summary>Où voir mes notifications ?</summary><p>Dans l'onglet Notifs du menu du bas. Une pastille indique le nombre de nouveautés.</p></details>
+</section>
+
+<section class="apparait">
+  <div class="final">
+    <h2 id="titreFinal">Rejoins SELEMANI</h2>
+    <p class="sous" style="margin-bottom:0" id="texteFinal">Crée ton compte et commence à partager dès aujourd'hui.</p>
+    <div class="actions" id="actionsFinal">
+      <a href="inscription.html" class="btn btn-p">Créer un compte</a>
+      <a href="connexion.html" class="btn btn-s">Se connecter</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><a href="connexion.html">Connexion</a>·<a href="inscription.html">Inscription</a></div>
+  <div>© <span id="annee"></span> SELEMANI. Tous droits réservés.</div>
+</footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+
+// Configuration publique de Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+document.getElementById("annee").textContent = new Date().getFullYear();
+
+// Apparition douce des sections au défilement
+(function () {
+  const blocs = document.querySelectorAll(".apparait");
+  if (!("IntersectionObserver" in window)) { blocs.forEach(b => b.classList.add("vu")); return; }
+  const obs = new IntersectionObserver(entrees => {
+    entrees.forEach(e => { if (e.isIntersecting) { e.target.classList.add("vu"); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  blocs.forEach(b => obs.observe(b));
+})();
+
+// Si la personne est déjà connectée, on lui propose d'ouvrir directement SELEMANI
+(async function () {
+  try {
+    if (!window.supabase) return;
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const { data } = await client.auth.getSession();
+    const user = data && data.session ? data.session.user : null;
+    if (!user) return;
+
+    const meta = user.user_metadata || {};
+    const nom = meta.nom_utilisateur || meta.username || (user.email ? user.email.split("@")[0] : "toi");
+    document.getElementById("monNom").textContent = "@" + String(nom).replace(/^@/, "");
+    document.getElementById("connecte").style.display = "block";
+
+    const principal = document.getElementById("btnPrincipal");
+    principal.href = "accueil.html";
+    principal.textContent = "Ouvrir SELEMANI";
+    const secondaire = document.getElementById("btnSecondaire");
+    secondaire.href = "profil.html";
+    secondaire.textContent = "Mon profil";
+
+    document.getElementById("titreFinal").textContent = "Content de te revoir";
+    document.getElementById("texteFinal").textContent = "Retrouve ton fil, tes messages et tes notifications.";
+    document.getElementById("actionsFinal").innerHTML =
+      '<a href="accueil.html" class="btn btn-p">Ouvrir SELEMANI</a><a href="messages.html" class="btn btn-s">Mes messages</a>';
+  } catch (e) {
+    console.warn("Session non vérifiée :", e);
+  }
+})();
+</script>
+</body>
+</html>

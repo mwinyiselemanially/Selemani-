@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Créer | SELEMANI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12)}
+html,body{height:100%;overflow:hidden;background:var(--fond);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{display:flex;justify-content:center;background:radial-gradient(700px 500px at 10% 20%,rgba(139,92,246,.22),transparent),radial-gradient(700px 500px at 90% 80%,rgba(34,230,255,.16),transparent),var(--fond)}
+button,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{opacity:.45;cursor:not-allowed}
+.app{position:relative;width:100%;max-width:480px;height:100dvh;display:flex;flex-direction:column;background:#05060c;box-shadow:0 0 80px rgba(34,230,255,.12),0 0 0 1px var(--bd);overflow:hidden}
+.barre{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;border-bottom:1px solid var(--bd);background:rgba(5,6,12,.92);backdrop-filter:blur(16px)}
+.fermer{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd);display:grid;place-items:center;font-size:18px;text-decoration:none;color:var(--tx)}
+.titre{flex:1;font-weight:850;font-size:16px}
+.publier{padding:10px 18px;border-radius:13px;font-weight:850;font-size:13px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 20px rgba(139,92,246,.3)}
+.zone{flex:1;overflow-y:auto;padding:16px 16px calc(100px + env(safe-area-inset-bottom));scrollbar-width:none}
+.zone::-webkit-scrollbar{display:none}
+.auteur{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.av{width:46px;height:46px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;overflow:hidden;font-weight:900;font-size:18px;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg))}
+.av img{width:100%;height:100%;object-fit:cover}
+.auteur b{display:block;font-size:15px;overflow-wrap:anywhere}
+.auteur span{font-size:12px;color:var(--tx2)}
+textarea{width:100%;min-height:150px;max-height:45vh;resize:none;padding:14px;border:1px solid var(--bd);border-radius:16px;background:#05070d;outline:none;font-size:16px;line-height:1.55}
+textarea:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(34,230,255,.1)}
+.compteur{margin-top:6px;text-align:right;font-size:11px;color:var(--tx2)}
+.apercu{position:relative;margin-top:12px;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--bd)}
+.apercu img,.apercu video{display:block;width:100%;max-height:340px;object-fit:contain}
+.apercu .nom{padding:8px 12px;font-size:12px;color:var(--tx2);overflow-wrap:anywhere;background:#0b0e18}
+.apercu .retirer{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;background:#000b;font-size:16px;color:#fff}
+.outils{display:flex;gap:10px;margin-top:14px}
+.outil{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:1px dashed var(--cy);border-radius:14px;background:linear-gradient(120deg,rgba(34,230,255,.08),rgba(139,92,246,.1));color:var(--cy);font-size:13.5px;font-weight:800}
+.aide{margin-top:14px;font-size:12px;line-height:1.6;color:var(--tx2)}
+#message{display:none;margin-top:14px;padding:11px 12px;border-radius:12px;font-size:13.5px;line-height:1.55;overflow-wrap:anywhere}
+#message.ok{display:block;background:rgba(34,197,94,.14);color:#86efac}
+#message.err{display:block;background:rgba(255,77,109,.14);color:#ff9aaa}
+#message.info{display:block;background:rgba(34,230,255,.1);color:#a9eeff}
+.nav{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:space-around;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:rgba(4,5,10,.92);border-top:1px solid var(--bd);backdrop-filter:blur(18px)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;color:var(--tx2);text-decoration:none;font-size:10px}
+.nav .i{font-size:21px}.nav .actif{color:#fff}
+.nav .plus .i{width:47px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:25px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 20px rgba(34,230,255,.5)}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="cachelocal.js"></script>
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<div class="app">
+
+<header class="barre">
+  <a class="fermer" href="accueil.html" aria-label="Annuler">✕</a>
+  <div class="titre">Nouvelle publication</div>
+  <button class="publier" id="publier" type="button" disabled>Publier</button>
+</header>
+
+<main class="zone">
+  <div class="auteur">
+    <div class="av" id="monAv">S</div>
+    <div><b id="monNom">Chargement...</b><span>Visible dans le fil de SELEMANI</span></div>
+  </div>
+
+  <textarea id="texte" maxlength="10000" placeholder="Quoi de neuf ? Partage quelque chose..." aria-label="Texte de la publication"></textarea>
+  <div class="compteur" id="compteur">0 / 10000</div>
+
+  <div class="apercu" id="apercu" hidden></div>
+
+  <div class="outils">
+    <button class="outil" id="btnPhoto" type="button">📷 Photo</button>
+    <button class="outil" id="btnVideo" type="button">🎥 Vidéo</button>
+  </div>
+  <input type="file" id="fichier" accept="image/*,video/*" hidden>
+
+  <p class="aide">Photo ou vidéo : 50 Mo au maximum. Ton texte est gardé en brouillon si l'envoi échoue.</p>
+  <p id="message" role="status" aria-live="polite"></p>
+</main>
+
+<nav class="nav">
+  <a href="accueil.html"><span class="i">⌂</span>Accueil</a>
+  <a href="messages.html"><span class="i">✉</span>Messages</a>
+  <a href="creer.html" class="plus actif"><span class="i">+</span><span>Créer</span></a>
+  <a href="notifications.html"><span class="i">🔔</span>Notifs</a>
+  <a href="profil.html"><span class="i">♙</span>Profil</a>
+</nav>
+</div>
+
+<script>
+"use strict";
+
+// Configuration Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+const LIMITE = 50 * 1024 * 1024;
+
+const $ = id => document.getElementById(id);
+function msg(texte, type) { const m = $("message"); m.textContent = texte; m.className = type || ""; }
+
+if (!window.supabase) {
+  msg("La bibliothèque Supabase n'a pas pu se charger. Vérifie ta connexion Internet et recharge la page.", "err");
+  throw new Error("supabase-js non chargé");
+}
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let moi = null;
+let fichier = null;
+let urlApercu = null;
+let envoi = false;
+let attenteBrouillon = null;
+
+function nomDepuisUtilisateur() {
+  const m = (moi && moi.user_metadata) || {};
+  return m.full_name || m.name || m.nom || m.nom_complet || (moi && moi.email ? moi.email.split("@")[0] : "Utilisateur");
+}
+
+function majEtat() {
+  const n = $("texte").value.length;
+  $("compteur").textContent = n + " / 10000";
+  $("publier").disabled = envoi || !($("texte").value.trim() || fichier);
+}
+
+/* ---------- Brouillon ---------- */
+$("texte").addEventListener("input", () => {
+  majEtat();
+  clearTimeout(attenteBrouillon);
+  attenteBrouillon = setTimeout(() => CacheSelemani.set("brouillon", $("texte").value), 400);
+});
+
+/* ---------- Photo ou vidéo ---------- */
+$("btnPhoto").addEventListener("click", () => { $("fichier").accept = "image/*"; $("fichier").click(); });
+$("btnVideo").addEventListener("click", () => { $("fichier").accept = "video/*"; $("fichier").click(); });
+
+function retirerFichier() {
+  fichier = null;
+  $("fichier").value = "";
+  if (urlApercu) { URL.revokeObjectURL(urlApercu); urlApercu = null; }
+  $("apercu").replaceChildren();
+  $("apercu").hidden = true;
+  majEtat();
+}
+
+$("fichier").addEventListener("change", function () {
+  const f = this.files && this.files[0];
+  if (!f) return;
+  const image = f.type.startsWith("image/");
+  const video = f.type.startsWith("video/");
+  if (!image && !video) { retirerFichier(); msg("Choisis une image ou une vidéo valide.", "err"); return; }
+  if (f.size > LIMITE) { retirerFichier(); msg("Le fichier dépasse la limite de 50 Mo.", "err"); return; }
+
+  msg("", "");
+  if (urlApercu) URL.revokeObjectURL(urlApercu);
+  fichier = f;
+  urlApercu = URL.createObjectURL(f);
+
+  const z = $("apercu");
+  z.replaceChildren();
+  const m = document.createElement(image ? "img" : "video");
+  m.src = urlApercu;
+  if (video) { m.muted = true; m.playsInline = true; m.controls = true; } else { m.alt = "Aperçu"; }
+  const x = document.createElement("button");
+  x.type = "button"; x.className = "retirer"; x.textContent = "✕";
+  x.setAttribute("aria-label", "Retirer le fichier");
+  x.addEventListener("click", retirerFichier);
+  const nom = document.createElement("div");
+  nom.className = "nom";
+  nom.textContent = f.name + " · " + (f.size / 1048576).toFixed(1) + " Mo";
+  z.append(m, x, nom);
+  z.hidden = false;
+  majEtat();
+});
+
+/* ---------- Publier ---------- */
+async function publier() {
+  if (envoi) return;
+  const texte = $("texte").value.trim();
+  if (!texte && !fichier) { msg("Écris un texte ou ajoute une photo ou une vidéo.", "err"); return; }
+  if (!navigator.onLine) { msg("Tu es hors ligne : ta publication n'est pas envoyée. Ton texte est gardé en brouillon.", "err"); return; }
+
+  envoi = true;
+  $("publier").textContent = "Publication...";
+  majEtat();
+  msg("Publication en cours...", "info");
+
+  try {
+    let url = null, type = null;
+    if (fichier) {
+      type = fichier.type.startsWith("video/") ? "video" : "image";
+      const ext = fichier.name.includes(".") ? fichier.name.split(".").pop().toLowerCase() : "bin";
+      const id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + "_" + Math.random().toString(36).slice(2);
+      const chemin = moi.id + "/" + Date.now() + "_" + id + "." + ext;
+      const { error: eu } = await db.storage.from("publications").upload(chemin, fichier, {
+        cacheControl: "3600", upsert: false, contentType: fichier.type
+      });
+      if (eu) throw new Error("Envoi du média impossible : " + eu.message);
+      url = db.storage.from("publications").getPublicUrl(chemin).data.publicUrl;
+    }
+
+    const { error } = await db.from("publications").insert([{
+      user_id: moi.id,
+      nom_auteur: nomDepuisUtilisateur(),
+      contenu: texte,
+      media_url: url,
+      media_type: type
+    }]);
+    if (error) throw new Error(error.message);
+
+    clearTimeout(attenteBrouillon);
+    CacheSelemani.set("brouillon", "");
+    msg("Publication publiée avec succès ! 🚀", "ok");
+    setTimeout(() => { window.location.href = "accueil.html"; }, 800);
+    return;
+  } catch (e) {
+    console.error("Erreur publication :", e);
+    msg(CacheSelemani.horsLigne(e)
+      ? "Connexion perdue : publication non envoyée. Ton texte est gardé en brouillon."
+      : "Impossible de publier : " + e.message, "err");
+  }
+  envoi = false;
+  $("publier").textContent = "Publier";
+  majEtat();
+}
+$("publier").addEventListener("click", publier);
+
+/* ---------- Démarrage ---------- */
+(async function demarrer() {
+  let session = null, erreur = null;
+  try {
+    const r = await db.auth.getSession();
+    session = r.data && r.data.session;
+    erreur = r.error;
+  } catch (e) { erreur = e; }
+
+  // Hors ligne : on utilise la session enregistrée pour garder le brouillon.
+  if (erreur && CacheSelemani.horsLigne(erreur)) {
+    const local = CacheSelemani.utilisateurLocal();
+    if (local) moi = local;
+  }
+  if (!moi) {
+    if (erreur) { msg("Erreur de session : " + erreur.message, "err"); return; }
+    moi = session ? session.user : null;
+    if (!moi) { window.location.replace("connexion.html"); return; }
+  }
+  CacheSelemani.init(moi.id);
+
+  // Brouillon enregistré
+  const b = CacheSelemani.get("brouillon");
+  if (b && b.d) { $("texte").value = b.d; msg("Ton brouillon a été restauré.", "info"); }
+  majEtat();
+
+  // Nom et photo de profil
+  $("monNom").textContent = nomDepuisUtilisateur();
+  try {
+    const { data } = await db.from("profils").select("nom_utilisateur,photo_profil").eq("id", moi.id).maybeSingle();
+    const pseudo = data && data.nom_utilisateur ? "@" + data.nom_utilisateur : nomDepuisUtilisateur();
+    $("monNom").textContent = pseudo;
+    const av = $("monAv");
+    if (data && /^https?:\/\//i.test(data.photo_profil || "")) {
+      const img = document.createElement("img");
+      img.src = data.photo_profil; img.alt = "";
+      img.onerror = () => { av.textContent = pseudo.replace("@", "").charAt(0).toUpperCase(); };
+      av.replaceChildren(img);
+    } else {
+      av.textContent = pseudo.replace("@", "").charAt(0).toUpperCase() || "S";
+    }
+  } catch (e) {
+    $("monAv").textContent = (nomDepuisUtilisateur().charAt(0) || "S").toUpperCase();
+  }
+})();
+</script>
+</body>
+</html>

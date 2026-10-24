@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>SELEMANI 2900 — Le futur commence ici</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12)}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--fond);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{display:flex;justify-content:center;background:radial-gradient(700px 500px at 10% 20%,rgba(139,92,246,.22),transparent),radial-gradient(700px 500px at 90% 80%,rgba(34,230,255,.16),transparent),var(--fond)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{opacity:.55;cursor:wait}
+.app{position:relative;width:100%;max-width:480px;height:100dvh;background:#000;box-shadow:0 0 80px rgba(34,230,255,.12),0 0 0 1px var(--bd);overflow:hidden}
+.haut{position:absolute;z-index:20;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top)) 14px 24px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(#000d,transparent)}
+.logo{font-weight:1000;font-size:19px;letter-spacing:2px;white-space:nowrap;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.onglets{display:flex;gap:12px;align-items:center;font-size:13px;font-weight:700;white-space:nowrap}
+.onglets button{padding-bottom:5px;color:#fff9}
+.onglets button.actif{color:#fff;border-bottom:2px solid var(--cy)}
+.deco{font-size:11px;border:1px solid var(--bd);padding:7px 10px;border-radius:99px;background:#0008;color:#ff8fb8;white-space:nowrap}
+#filPublications{height:100%;overflow-y:auto;overscroll-behavior-y:contain;scroll-snap-type:y mandatory;scrollbar-width:none}
+#filPublications::-webkit-scrollbar{display:none}
+.slide{position:relative;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#05060c}
+.slide.txt{display:grid;place-items:center;padding:90px 75px 130px 26px;background:linear-gradient(135deg,#1a0b3d,#06222f 55%,#34082a);background-size:220% 220%;animation:fondAnime 12s ease infinite}
+@keyframes fondAnime{50%{background-position:100% 100%}}
+.slide.txt::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(34,230,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(34,230,255,.07) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:radial-gradient(circle,#000,transparent 80%);mask-image:radial-gradient(circle,#000,transparent 80%);pointer-events:none}
+.gros{position:relative;font-size:clamp(20px,5.2vw,28px);font-weight:850;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;text-shadow:0 0 24px rgba(34,230,255,.45)}
+.media{position:absolute;inset:0;width:100%;height:100%;background:#000}
+video.media{object-fit:cover}
+img.media{object-fit:contain}
+.voile{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 45%,#000d)}
+.info{position:absolute;z-index:5;left:14px;right:80px;bottom:calc(90px + env(safe-area-inset-bottom));pointer-events:none}
+.auteur{font-weight:850;font-size:16px;overflow-wrap:anywhere;text-shadow:0 1px 8px #000}
+.legende{margin-top:8px;font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;max-height:120px;overflow:auto;text-shadow:0 1px 8px #000}
+.date{margin-top:6px;font-size:11px;color:#d1d5e5}
+.rail{position:absolute;z-index:6;right:10px;bottom:calc(92px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:17px}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));border:2px solid #fff;box-shadow:0 0 18px rgba(34,230,255,.6)}
+.act{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:48px;font-size:12px;font-weight:750;text-shadow:0 1px 6px #000}
+.act .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid var(--bd);backdrop-filter:blur(10px)}
+.act svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.act.aime .ic{background:rgba(255,46,147,.25);border-color:var(--mg);box-shadow:0 0 22px rgba(255,46,147,.7);animation:coeurPop .35s}
+.act.aime svg{fill:var(--mg);stroke:var(--mg)}
+@keyframes coeurPop{50%{transform:scale(1.25)}}
+.coeur{position:absolute;z-index:7;left:50%;top:45%;font-size:100px;transform:translate(-50%,-50%) scale(.3);opacity:0;pointer-events:none;transition:.25s;filter:drop-shadow(0 0 25px var(--mg))}
+.coeur.go{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.son{position:absolute;z-index:8;top:calc(75px + env(safe-area-inset-top));right:12px;width:38px;height:38px;border-radius:50%;background:#0009;border:1px solid var(--bd);font-size:16px}
+.nav{position:absolute;z-index:30;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-around;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:rgba(4,5,10,.9);border-top:1px solid var(--bd);backdrop-filter:blur(18px)}
+.nav a,.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:48px;color:var(--tx2);text-decoration:none;font-size:10px}
+.nav .i{font-size:21px}
+.nav .actif{color:#fff}
+.nav .plus .i{width:47px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:25px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 20px rgba(34,230,255,.5)}
+.fond{position:absolute;z-index:40;inset:0;background:#000b;opacity:0;pointer-events:none;transition:.25s}
+.fond.on{opacity:1;pointer-events:auto}
+.feuille{position:absolute;z-index:41;left:0;right:0;bottom:0;max-height:82%;display:flex;flex-direction:column;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:#0b0e18;border:1px solid var(--bd);border-radius:24px 24px 0 0;transform:translateY(105%);transition:.3s}
+.feuille.on{transform:none;box-shadow:0 -10px 50px rgba(34,230,255,.15)}
+.fe-t{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:850}
+.fe-t button{font-size:22px;color:var(--tx2)}
+.liste{overflow-y:auto;flex:1;display:grid;gap:10px;margin-bottom:12px;align-content:start;min-height:80px}
+.com{display:flex;gap:10px;padding:10px 12px;background:#141a2b;border-radius:12px;overflow-wrap:anywhere}
+.com.rep{margin-left:30px;background:#10162a}
+.com .cc{flex:1;min-width:0}
+.av-com{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;overflow:hidden;font-weight:900;font-size:14px;cursor:pointer;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg))}
+.av-com img{width:100%;height:100%;object-fit:cover}
+.com-act{display:flex;gap:16px;margin-top:6px}
+.com-act button{font-size:12px;font-weight:700;color:var(--tx2)}
+.cible-rep{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:12px;background:rgba(34,230,255,.1);color:#a9eeff;font-size:12.5px}
+.cible-rep[hidden]{display:none}
+.cible-rep button{font-size:16px;color:var(--tx2)}
+.act.sauve .ic{background:rgba(34,230,255,.22);border-color:var(--cy);box-shadow:0 0 20px rgba(34,230,255,.6)}
+.act.sauve svg{fill:var(--cy);stroke:var(--cy)}
+.action{display:flex;width:100%;padding:15px 14px;margin-bottom:8px;border:1px solid var(--bd);border-radius:14px;background:#141a2b;font-size:15px;font-weight:700;text-align:left}
+.action.danger{color:#ff8197}
+.motif{display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;border:1px solid var(--bd);border-radius:12px;font-size:14px;cursor:pointer}
+.motif input{width:18px;height:18px;accent-color:var(--cy)}
+.cadre-motifs{overflow-y:auto;max-height:42vh}
+.com b{display:block;font-size:12px;color:var(--cy);margin-bottom:4px}
+.com span{font-size:14px;line-height:1.5;white-space:pre-wrap}
+.vide{text-align:center;color:var(--tx2);padding:20px;font-size:14px;overflow-wrap:anywhere}
+.ligne{display:flex;gap:8px}
+.champ,textarea{width:100%;background:#05070d;border:1px solid var(--bd);border-radius:14px;padding:12px;outline:none;font-size:14px}
+.champ:focus,textarea:focus{border-color:var(--cy)}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+.btn{padding:12px 18px;border-radius:14px;font-weight:850;font-size:13px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg));white-space:nowrap}
+.btn2{padding:10px 13px;border-radius:12px;background:#141a2b;border:1px solid var(--bd);font-size:13px;font-weight:650}
+.apercu{display:none;margin-top:10px;font-size:12px;color:var(--tx2);overflow-wrap:anywhere}
+.apercu img,.apercu video{width:100%;max-height:180px;object-fit:contain;border-radius:12px;background:#000;margin-bottom:6px}
+.acts{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+.message{display:none;margin-top:10px;padding:10px;border-radius:10px;font-size:13px;overflow-wrap:anywhere}
+.message.succes{display:block;background:rgba(34,197,94,.14);color:#86efac}
+.message.erreur{display:block;background:rgba(255,77,109,.14);color:#ff9aaa}
+.message.info{display:block;background:rgba(34,230,255,.12);color:#a9eeff}
+#messageFil{position:absolute;z-index:25;top:calc(68px + env(safe-area-inset-top));left:14px;right:14px;margin:0}
+.etat{min-height:100dvh;display:grid;place-items:center;text-align:center;padding:35px;color:var(--tx2);line-height:1.8;white-space:pre-line;scroll-snap-align:start}
+.etat strong{color:var(--cy)}
+.chargement{animation:pulsation 1.2s ease-in-out infinite alternate}
+@keyframes pulsation{from{opacity:.5}to{opacity:1}}
+.diag{font-size:12px;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;background:#05070d;border:1px solid var(--bd);border-radius:12px;padding:12px;margin-top:14px;line-height:1.6;color:#d1d5e5}
+.av{overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.avw{position:relative;width:46px;height:58px}
+.avw .av{cursor:pointer}
+.suivre{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:900;line-height:1;color:#fff;background:linear-gradient(135deg,var(--mg),var(--vi));box-shadow:0 0 12px rgba(255,46,147,.7)}
+.suivre[hidden]{display:none}
+.badge-msg{position:absolute;top:-3px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--mg);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 10px rgba(255,46,147,.7)}
+.badge-msg[hidden]{display:none}
+.nav a{position:relative}
+.groupe{display:flex;align-items:center;gap:6px}
+.pf-tete{text-align:center;padding:6px 0 4px}
+.pf-av{width:92px!important;height:92px!important;font-size:36px!important;margin:0 auto 10px}
+.pf-nom{font-size:19px;font-weight:900;overflow-wrap:anywhere}
+.pf-bio{margin-top:6px;color:var(--tx2);font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.pf-stats{display:flex;gap:8px;margin:16px 0}
+.pf-st{flex:1;padding:11px 4px;text-align:center;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:14px}
+.pf-st b{display:block;font-size:18px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pf-st span{font-size:10px;color:var(--tx2)}
+.pf-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pf-act .btn,.pf-act .btn2{text-decoration:none;color:#fff;text-align:center}
+.pers{display:flex;align-items:center;gap:12px;width:100%;padding:10px 4px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.pers .av{width:42px;height:42px;font-size:16px;border-width:1px;flex-shrink:0}
+.pers b{font-size:14px;overflow-wrap:anywhere}
+.res{overflow-y:auto;min-height:80px;max-height:50vh}
+@media(max-width:400px){.logo{font-size:16px;letter-spacing:1px}.onglets{gap:8px;font-size:12px}.deco{padding:7px 8px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="cachelocal.js"></script>
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<div class="app">
+<header class="haut">
+  <div class="logo">SELEMANI</div>
+  <div class="onglets">
+    <button id="ongletAbonnes" type="button">Abonnés</button>
+    <button id="ongletPourToi" class="actif" type="button">Pour toi</button>
+  </div>
+  <div class="groupe"><button class="deco" id="boutonRecherche" type="button" aria-label="Rechercher un profil">🔍</button><button class="deco" id="boutonDeconnexion" type="button">Quitter</button></div>
+</header>
+<div id="messageFil" class="message" role="status" aria-live="polite"></div>
+<main id="filPublications"><div class="etat chargement">SELEMANI 2900<br>Chargement du futur...</div></main>
+<nav class="nav">
+  <a href="accueil.html" class="actif"><span class="i">⌂</span>Accueil</a>
+  <a href="messages.html"><span class="i">✉</span>Messages<span class="badge-msg" id="badgeMsg" hidden></span></a>
+  <button class="plus" id="boutonCreer" type="button" aria-label="Créer une publication"><span class="i">+</span><span>Créer</span></button>
+  <a href="notifications.html"><span class="i">🔔</span>Notifs<span class="badge-msg" id="badgeNotif" hidden></span></a>
+  <a href="profil.html"><span class="i">♙</span>Profil</a>
+</nav>
+<div class="fond" id="fond"></div>
+<section class="feuille" id="feuilleCreer" aria-label="Créer une publication">
+  <div class="fe-t"><span>Créer une publication 🚀</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <form id="formulairePublication">
+    <textarea id="contenuPublication" maxlength="10000" placeholder="Quoi de neuf ? Partage quelque chose..."></textarea>
+    <input type="file" id="fichierMedia" accept="image/*,video/*" hidden>
+    <div class="apercu" id="apercuFichier"></div>
+    <div class="acts">
+      <label for="fichierMedia" class="btn2">📷 Photo / Vidéo</label>
+      <button type="submit" class="btn" id="boutonPublier">Publier</button>
+    </div>
+  </form>
+  <div id="messagePublication" class="message" role="status"></div>
+</section>
+<section class="feuille" id="feuilleCom" aria-label="Commentaires">
+  <div class="fe-t"><span>Commentaires 💬</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <div class="liste" id="listeCom"></div>
+  <div class="cible-rep" id="cibleRep" hidden><span id="texteRep"></span><button type="button" id="annulerRep" aria-label="Annuler la réponse">✕</button></div>
+  <form class="ligne" id="formCom">
+    <input class="champ" id="champCom" type="text" maxlength="2000" placeholder="Écrire un commentaire..." autocomplete="off" required>
+    <button class="btn" id="boutonCom" type="submit">Envoyer</button>
+  </form>
+</section>
+<section class="feuille" id="feuilleProfil" aria-label="Profil">
+  <div class="fe-t"><span>Profil</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <div id="contenuProfil"></div>
+</section>
+<section class="feuille" id="feuilleRecherche" aria-label="Rechercher un profil">
+  <div class="fe-t"><span>Rechercher 🔍</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <input class="champ" id="champRecherche" placeholder="Nom d'utilisateur..." autocomplete="off" spellcheck="false" style="margin-bottom:10px">
+  <div class="res" id="resultatsRecherche"></div>
+</section>
+<section class="feuille" id="feuilleActions" aria-label="Actions">
+  <div class="fe-t"><span id="titreActions">Actions</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <div id="contenuActions"></div>
+</section>
+<section class="feuille" id="feuilleSignaler" aria-label="Signaler">
+  <div class="fe-t"><span>Signaler ⚑</span><button type="button" data-fermer aria-label="Fermer">✕</button></div>
+  <p id="libelleSignal" style="color:var(--tx2);font-size:13px;margin-bottom:12px;line-height:1.5"></p>
+  <form id="formSignal">
+    <div class="cadre-motifs" id="motifs"></div>
+    <textarea id="detailsSignal" maxlength="300" placeholder="Détails (facultatif)" style="min-height:70px;margin-top:6px"></textarea>
+    <div class="acts"><span></span><button type="submit" class="btn" id="boutonSignal">Envoyer le signalement</button></div>
+  </form>
+</section>
+</div>
+
+<script>
+"use strict";
+
+/* 1. CONFIGURATION SUPABASE (identifiants conservés) */
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+const $ = id => document.getElementById(id);
+const filPublications = $("filPublications");
+
+/* Si la bibliothèque Supabase n'a pas pu se charger, on le dit clairement */
+if (!window.supabase) {
+    filPublications.replaceChildren(creerEtatSimple(
+        "La bibliothèque Supabase n'a pas pu se charger.\n\nVérifie ta connexion ou désactive ton bloqueur de pubs, puis recharge."
+    ));
+    throw new Error("supabase-js non chargé");
+}
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let utilisateurActuel = null;
+let publicationsEnCours = false;
+let pubCommentee = null;
+let urlApercu = null;
+let observateur = null;
+
+const formulairePublication = $("formulairePublication");
+const contenuPublication = $("contenuPublication");
+const fichierMedia = $("fichierMedia");
+const apercuFichier = $("apercuFichier");
+const boutonPublier = $("boutonPublier");
+
+/* 2. OUTILS */
+function creerElement(tag, classe, texte = "") {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texte !== "") e.textContent = texte;
+    return e;
+}
+function creerEtatSimple(texte) { return creerElement("div", "etat", texte); }
+function afficherMessage(id, texte, type = "info") {
+    const e = $(id); e.textContent = texte; e.className = "message " + type;
+}
+function masquerMessage(id) {
+    const e = $(id); e.textContent = ""; e.className = "message";
+}
+function formaterDate(v) {
+    if (!v) return "";
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+}
+function nomDepuisUtilisateur() {
+    if (!utilisateurActuel) return "Utilisateur";
+    const m = utilisateurActuel.user_metadata || {};
+    return m.full_name || m.name || m.nom || m.nom_complet ||
+        (utilisateurActuel.email ? utilisateurActuel.email.split("@")[0] : "Utilisateur");
+}
+function nomAffiche(nom) {
+    const p = String(nom || "Utilisateur").trim();
+    return p.startsWith("@") ? p : "@" + p;
+}
+
+/* DIAGNOSTIC RÉSEAU : explique pourquoi "Failed to fetch" */
+async function lancerDiagnostic() {
+    const lignes = [];
+    lignes.push("Internet : " + (navigator.onLine ? "oui" : "NON (hors ligne)"));
+    lignes.push("Page : " + location.protocol + "//" + location.host);
+    lignes.push("Clé : " + SUPABASE_ANON_KEY.slice(0, 15) + "… (" + SUPABASE_ANON_KEY.length + " car.)");
+    const tests = [
+        ["Serveur Auth", SUPABASE_URL + "/auth/v1/health"],
+        ["API Données", SUPABASE_URL + "/rest/v1/publications?select=id&limit=1"]
+    ];
+    for (const [nom, url] of tests) {
+        try {
+            const c = new AbortController();
+            const t = setTimeout(() => c.abort(), 8000);
+            const r = await fetch(url, {
+                headers: { apikey: SUPABASE_ANON_KEY },
+                signal: c.signal
+            });
+            clearTimeout(t);
+            const corps = (await r.text()).slice(0, 160);
+            lignes.push(nom + " : HTTP " + r.status + " " + corps);
+        } catch (e) {
+            lignes.push(nom + " : ÉCHEC (" + (e.name === "AbortError" ? "délai dépassé" : e.message) + ")");
+        }
+    }
+    try {
+        const { data: s } = await supabaseClient.auth.getSession();
+        const sess = s && s.session;
+        lignes.push("Session : " + (sess ? "oui, expire " + new Date(sess.expires_at * 1000).toLocaleString("fr-FR") : "NON"));
+        if (sess) {
+            lignes.push("Taille du jeton : " + sess.access_token.length + " caractères (normal : environ 800 à 1500)");
+            const meta = (sess.user && sess.user.user_metadata) || {};
+            const tailles = Object.keys(meta).map(k => k + "=" + JSON.stringify(meta[k]).length);
+            lignes.push("Métadonnées utilisateur : " + (tailles.join(", ") || "vide"));
+            try {
+                const r = await fetch(SUPABASE_URL + "/rest/v1/publications?select=id&limit=1", {
+                    headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + sess.access_token }
+                });
+                lignes.push("Données + jeton session : HTTP " + r.status + " " + (await r.text()).slice(0, 120));
+            } catch (e) {
+                lignes.push("Données + jeton session : ÉCHEC (" + e.message + ")");
+            }
+        }
+    } catch (e) {
+        lignes.push("Session : erreur (" + e.message + ")");
+    }
+    const essais = [
+        ["Client select id", () => supabaseClient.from("publications").select("id").limit(1)],
+        ["Client select *", () => supabaseClient.from("publications").select("*").limit(1)],
+        ["Client select * + tri", () => supabaseClient.from("publications").select("*").order("created_at", { ascending: false }).limit(50)]
+    ];
+    for (const [nom, f] of essais) {
+        try {
+            const r = await f();
+            lignes.push(nom + " : " + (r.error ? "ERREUR " + r.error.message : "OK (" + (r.data || []).length + " lignes)"));
+        } catch (e) {
+            lignes.push(nom + " : ÉCHEC (" + e.message + ")");
+        }
+    }
+    return lignes.join("\n");
+}
+
+/* 3. ICÔNES */
+const ICONES = {
+    coeur: '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.5 3 5 6.4 5c2 0 3.4 1.1 5.6 3.3C14.2 6.1 15.6 5 17.6 5 21 5 22.8 8.5 21.5 11.8 19.5 16.4 12 21 12 21z"/></svg>',
+    bulle: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.8 7L3 20.5l1.6-5.1A8 8 0 1 1 21 12z"/></svg>',
+    envoi: '<svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>',
+    corbeille: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>',
+    bookmark: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+    plus: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="#fff"/><circle cx="12" cy="12" r="1.6" fill="#fff"/><circle cx="19" cy="12" r="1.6" fill="#fff"/></svg>'
+};
+function creerBoutonAction(icone, nombre) {
+    const b = creerElement("button", "act");
+    const ic = creerElement("span", "ic");
+    const n = creerElement("span", "", String(nombre));
+    b.type = "button";
+    b.setAttribute("aria-label", icone);
+    ic.innerHTML = ICONES[icone];
+    b.append(ic, n);
+    return { b, n };
+}
+
+/* 3b. PROFILS, ABONNEMENTS, RECHERCHE */
+let profils = {};
+let abonnes = new Set();
+let ongletFil = "pourtoi";
+
+async function chargerProfils(ids) {
+    const manquants = ids.filter(i => i && !profils[i]);
+    if (!manquants.length) return;
+    const { data, error } = await supabaseClient.from("profils")
+        .select("id,nom_utilisateur,photo_profil,biographie").in("id", manquants);
+    if (error) { console.warn("Profils :", error.message); return; }
+    (data || []).forEach(p => { profils[p.id] = p; });
+}
+function nomPublic(id, defaut) {
+    const p = profils[id];
+    return p && p.nom_utilisateur ? "@" + p.nom_utilisateur : defaut;
+}
+function lienPhoto(v) { return typeof v === "string" && /^https?:\/\//i.test(v) ? v : ""; }
+function remplirAvatar(div, id, nom) {
+    div.replaceChildren();
+    const url = lienPhoto(profils[id] && profils[id].photo_profil);
+    const lettre = (String(nom || "U").replace(/^@/, "").trim().charAt(0) || "U").toUpperCase();
+    if (url) {
+        const img = document.createElement("img");
+        img.src = url; img.alt = "";
+        img.onerror = () => { div.textContent = lettre; };
+        div.appendChild(img);
+    } else {
+        div.textContent = lettre;
+    }
+}
+
+async function chargerMesAbonnements() {
+    abonnes = new Set();
+    const { data, error } = await supabaseClient.from("abonnements")
+        .select("suivi_id").eq("abonne_id", utilisateurActuel.id);
+    if (error) {
+        console.warn("Abonnements :", error.message);
+        const copie = CacheSelemani.get("abonnes");
+        if (copie) abonnes = new Set(copie.d);
+        return;
+    }
+    (data || []).forEach(a => abonnes.add(a.suivi_id));
+    CacheSelemani.set("abonnes", [...abonnes]);
+}
+
+function majBadgesSuivre(id) {
+    document.querySelectorAll('.slide[data-auteur="' + id + '"] .suivre').forEach(b => { b.hidden = abonnes.has(id); });
+}
+
+// Suivre / ne plus suivre. Retourne true si on suit maintenant ce profil.
+async function basculerSuivre(id) {
+    if (!utilisateurActuel || id === utilisateurActuel.id) return abonnes.has(id);
+    const suit = abonnes.has(id);
+    const { error } = suit
+        ? await supabaseClient.from("abonnements").delete().eq("abonne_id", utilisateurActuel.id).eq("suivi_id", id)
+        : await supabaseClient.from("abonnements").insert({ abonne_id: utilisateurActuel.id, suivi_id: id });
+    if (error && error.code !== "23505") {
+        afficherMessage("messageFil", "Abonnement impossible : " + error.message, "erreur");
+        setTimeout(() => masquerMessage("messageFil"), 4000);
+        return suit;
+    }
+    if (suit) abonnes.delete(id); else abonnes.add(id);
+    majBadgesSuivre(id);
+    return !suit;
+}
+
+// Photo de l'auteur au-dessus du cœur : touche-la pour voir le profil, touche + pour suivre.
+function creerAvatarAuteur(pub, nom) {
+    const w = creerElement("div", "avw");
+    const av = creerElement("div", "av");
+    av.setAttribute("role", "button");
+    av.setAttribute("aria-label", "Voir le profil");
+    remplirAvatar(av, pub.user_id, nom);
+    av.addEventListener("click", () => ouvrirProfil(pub.user_id));
+    w.appendChild(av);
+    if (utilisateurActuel && pub.user_id !== utilisateurActuel.id) {
+        const b = creerElement("button", "suivre", "+");
+        b.type = "button";
+        b.setAttribute("aria-label", "Suivre");
+        b.hidden = abonnes.has(pub.user_id);
+        b.addEventListener("click", async e => {
+            e.stopPropagation();
+            b.disabled = true;
+            await basculerSuivre(pub.user_id);
+            b.disabled = false;
+        });
+        w.appendChild(b);
+    }
+    return w;
+}
+
+// Fenêtre de profil : photo, bio, statistiques, suivre, voir le profil, message.
+async function ouvrirProfil(id) {
+    if (!id) return;
+    ouvrirFeuille("feuilleProfil");
+    const z = $("contenuProfil");
+    z.replaceChildren(creerElement("div", "vide", "Chargement..."));
+    try {
+        await chargerProfils([id]);
+        const [a, s, p] = await Promise.all([
+            supabaseClient.from("abonnements").select("abonne_id", { count: "exact", head: true }).eq("suivi_id", id),
+            supabaseClient.from("abonnements").select("suivi_id", { count: "exact", head: true }).eq("abonne_id", id),
+            supabaseClient.from("publications").select("id", { count: "exact", head: true }).eq("user_id", id)
+        ]);
+        const moi = Boolean(utilisateurActuel && id === utilisateurActuel.id);
+        const nom = nomPublic(id, "Utilisateur");
+        const prof = profils[id] || {};
+
+        const tete = creerElement("div", "pf-tete");
+        const av = creerElement("div", "av pf-av");
+        remplirAvatar(av, id, nom);
+        tete.append(av, creerElement("div", "pf-nom", nom),
+            creerElement("div", "pf-bio", prof.biographie || "Aucune biographie pour le moment."));
+
+        const stats = creerElement("div", "pf-stats");
+        let nbAbonnes = null;
+        [[a.count || 0, "Abonnés"], [s.count || 0, "Abonnements"], [p.count || 0, "Posts"]].forEach(([n, l], i) => {
+            const c = creerElement("div", "pf-st");
+            const b = creerElement("b", "", String(n));
+            if (i === 0) nbAbonnes = b;
+            c.append(b, creerElement("span", "", l));
+            stats.appendChild(c);
+        });
+
+        const act = creerElement("div", "pf-act");
+        if (!moi && utilisateurActuel) {
+            const bs = creerElement("button", abonnes.has(id) ? "btn2" : "btn", abonnes.has(id) ? "Abonné ✓" : "+ Suivre");
+            bs.type = "button";
+            bs.addEventListener("click", async () => {
+                bs.disabled = true;
+                const avant = abonnes.has(id);
+                const suit = await basculerSuivre(id);
+                bs.textContent = suit ? "Abonné ✓" : "+ Suivre";
+                bs.className = suit ? "btn2" : "btn";
+                if (suit !== avant) nbAbonnes.textContent = String(Math.max(0, Number(nbAbonnes.textContent) + (suit ? 1 : -1)));
+                bs.disabled = false;
+            });
+            act.appendChild(bs);
+        }
+        const voir = creerElement("a", "btn2", moi ? "Voir mon profil" : "Voir le profil");
+        voir.href = moi ? "profil.html" : "profil.html?id=" + encodeURIComponent(id);
+        act.appendChild(voir);
+        if (!moi && utilisateurActuel) {
+            const msg = creerElement("a", "btn2", "✉ Message");
+            msg.href = "messages.html?id=" + encodeURIComponent(id);
+            act.appendChild(msg);
+        }
+        if (!moi && utilisateurActuel) {
+            const sig = creerElement("button", "btn2", "⚑ Signaler");
+            sig.type = "button";
+            sig.addEventListener("click", () => { fermerFeuilles(); ouvrirSignalement("utilisateur", id, "Signaler le profil " + nom); });
+            const blq = creerElement("button", "btn2", bloques.has(id) ? "Débloquer" : "🚫 Bloquer");
+            blq.type = "button";
+            blq.addEventListener("click", async () => {
+                if (bloques.has(id)) { await debloquer(id); fermerFeuilles(); return; }
+                if (!confirm("Bloquer " + nom + " ? Tu ne verras plus ses publications ni ses commentaires.")) return;
+                if (await bloquer(id)) fermerFeuilles();
+            });
+            act.append(sig, blq);
+        }
+        z.replaceChildren(tete, stats, act);
+    } catch (e) {
+        console.error("Erreur profil :", e);
+        z.replaceChildren(creerElement("div", "vide", "Impossible de charger le profil : " + e.message));
+    }
+}
+
+// Recherche de profils par nom d'utilisateur.
+let attenteRecherche = null;
+$("boutonRecherche").addEventListener("click", () => {
+    ouvrirFeuille("feuilleRecherche");
+    $("champRecherche").value = "";
+    $("resultatsRecherche").replaceChildren(creerElement("div", "vide", "Tape au moins 2 lettres."));
+    setTimeout(() => $("champRecherche").focus(), 300);
+});
+$("champRecherche").addEventListener("input", () => {
+    clearTimeout(attenteRecherche);
+    attenteRecherche = setTimeout(async () => {
+        const q = $("champRecherche").value.trim().replace(/^@/, "").replace(/[%,()]/g, "");
+        const res = $("resultatsRecherche");
+        if (q.length < 2) { res.replaceChildren(creerElement("div", "vide", "Tape au moins 2 lettres.")); return; }
+        const { data, error } = await supabaseClient.from("profils")
+            .select("id,nom_utilisateur,photo_profil,biographie")
+            .ilike("nom_utilisateur", "%" + q + "%").limit(15);
+        if (error) { res.replaceChildren(creerElement("div", "vide", "Recherche impossible : " + error.message)); return; }
+        res.replaceChildren();
+        if (!data || !data.length) { res.appendChild(creerElement("div", "vide", "Aucun profil trouvé.")); return; }
+        data.filter(pr => !bloques.has(pr.id)).forEach(pr => {
+            profils[pr.id] = pr;
+            const b = creerElement("button", "pers");
+            b.type = "button";
+            const av = creerElement("div", "av");
+            remplirAvatar(av, pr.id, pr.nom_utilisateur);
+            b.append(av, creerElement("b", "", "@" + pr.nom_utilisateur));
+            b.addEventListener("click", () => { fermerFeuilles(); ouvrirProfil(pr.id); });
+            res.appendChild(b);
+        });
+    }, 280);
+});
+
+// Pastille du nombre de notifications non lues sur le bouton Notifs.
+async function majBadgeNotifs() {
+    try {
+        const { count, error } = await supabaseClient.from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", utilisateurActuel.id).eq("lu", false);
+        if (error || !count) return;
+        const b = $("badgeNotif");
+        b.textContent = count > 99 ? "99+" : String(count);
+        b.hidden = false;
+    } catch (e) { /* sans importance */ }
+}
+
+// Pastille du nombre de messages non lus sur le bouton Messages.
+async function majBadgeMessages() {
+    try {
+        const { count, error } = await supabaseClient.from("messages")
+            .select("id", { count: "exact", head: true })
+            .eq("destinataire_id", utilisateurActuel.id).eq("lu", false);
+        if (error || !count) return;
+        const b = $("badgeMsg");
+        b.textContent = count > 99 ? "99+" : String(count);
+        b.hidden = false;
+    } catch (e) { /* sans importance */ }
+}
+
+/* 3c. FAVORIS, BLOCAGES, SIGNALEMENTS, RÉPONSES */
+let bloques = new Set();
+let favoris = new Set();
+let cibleSignal = null;
+let cibleReponse = null;
+
+function toast(texte, type = "info") {
+    afficherMessage("messageFil", texte, type);
+    setTimeout(() => masquerMessage("messageFil"), 3500);
+}
+
+async function chargerMesBlocagesEtFavoris() {
+    const [b, fv] = await Promise.all([
+        supabaseClient.from("blocages").select("bloque_id").eq("bloqueur_id", utilisateurActuel.id),
+        supabaseClient.from("favoris").select("publication_id").eq("user_id", utilisateurActuel.id)
+    ]);
+    if (b.error) {
+        console.warn("Blocages :", b.error.message);
+        const c = CacheSelemani.get("bloques"); if (c) bloques = new Set(c.d);
+    } else {
+        bloques = new Set((b.data || []).map(x => x.bloque_id));
+        CacheSelemani.set("bloques", [...bloques]);
+    }
+    if (fv.error) {
+        console.warn("Favoris :", fv.error.message);
+        const c = CacheSelemani.get("favoris"); if (c) favoris = new Set(c.d);
+    } else {
+        favoris = new Set((fv.data || []).map(x => x.publication_id));
+        CacheSelemani.set("favoris", [...favoris]);
+    }
+}
+
+// Enregistrer / retirer une publication des favoris. Retourne true si elle est enregistrée.
+async function basculerFavori(id) {
+    const avait = favoris.has(id);
+    const { error } = avait
+        ? await supabaseClient.from("favoris").delete().eq("user_id", utilisateurActuel.id).eq("publication_id", id)
+        : await supabaseClient.from("favoris").insert({ user_id: utilisateurActuel.id, publication_id: id });
+    if (error && error.code !== "23505") {
+        toast("Favori impossible : " + error.message, "erreur");
+        return avait;
+    }
+    if (avait) favoris.delete(id); else favoris.add(id);
+    CacheSelemani.set("favoris", [...favoris]);
+    return !avait;
+}
+
+async function bloquer(id) {
+    const { error } = await supabaseClient.from("blocages").insert({ bloqueur_id: utilisateurActuel.id, bloque_id: id });
+    if (error && error.code !== "23505") { toast("Blocage impossible : " + error.message, "erreur"); return false; }
+    bloques.add(id);
+    abonnes.delete(id);
+    CacheSelemani.set("bloques", [...bloques]);
+    document.querySelectorAll('.slide[data-auteur="' + id + '"]').forEach(sl => sl.remove());
+    toast("Utilisateur bloqué. Tu ne verras plus ses publications.", "succes");
+    return true;
+}
+
+async function debloquer(id) {
+    const { error } = await supabaseClient.from("blocages").delete()
+        .eq("bloqueur_id", utilisateurActuel.id).eq("bloque_id", id);
+    if (error) { toast("Déblocage impossible : " + error.message, "erreur"); return false; }
+    bloques.delete(id);
+    CacheSelemani.set("bloques", [...bloques]);
+    toast("Utilisateur débloqué.", "succes");
+    chargerPublications();
+    return true;
+}
+
+// Fenêtre d'actions (signaler, bloquer...)
+function ouvrirActions(titre, actions) {
+    $("titreActions").textContent = titre;
+    const z = $("contenuActions");
+    z.replaceChildren();
+    actions.forEach(a => {
+        const b = creerElement("button", "action" + (a.danger ? " danger" : ""), a.texte);
+        b.type = "button";
+        b.addEventListener("click", () => { fermerFeuilles(); a.agir(); });
+        z.appendChild(b);
+    });
+    ouvrirFeuille("feuilleActions");
+}
+
+// Signalements
+const MOTIFS = ["Spam ou publicité", "Harcèlement ou intimidation", "Contenu inapproprié", "Violence ou menaces", "Fausses informations", "Autre"];
+
+function ouvrirSignalement(type, id, libelle) {
+    cibleSignal = { type, id };
+    $("libelleSignal").textContent = libelle;
+    const z = $("motifs");
+    z.replaceChildren();
+    MOTIFS.forEach((m, i) => {
+        const l = creerElement("label", "motif");
+        const r = document.createElement("input");
+        r.type = "radio"; r.name = "motif"; r.value = m;
+        if (i === 0) r.checked = true;
+        l.append(r, document.createTextNode(m));
+        z.appendChild(l);
+    });
+    $("detailsSignal").value = "";
+    ouvrirFeuille("feuilleSignaler");
+}
+
+$("formSignal").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!cibleSignal || !utilisateurActuel) return;
+    const motif = document.querySelector('input[name="motif"]:checked');
+    const bouton = $("boutonSignal");
+    bouton.disabled = true;
+    const { error } = await supabaseClient.from("signalements").insert({
+        auteur_id: utilisateurActuel.id,
+        type: cibleSignal.type,
+        cible_id: cibleSignal.id,
+        motif: motif ? motif.value : "Autre",
+        details: $("detailsSignal").value.trim() || null
+    });
+    bouton.disabled = false;
+    fermerFeuilles();
+    if (error && error.code === "23505") toast("Tu as déjà signalé cet élément.", "info");
+    else if (error) toast("Signalement impossible : " + error.message, "erreur");
+    else toast("Merci, ton signalement a été envoyé.", "succes");
+});
+
+// Réponses aux commentaires
+function definirReponse(racineId, nom) {
+    cibleReponse = { id: racineId, nom };
+    $("texteRep").textContent = "Réponse à " + nom;
+    $("cibleRep").hidden = false;
+    const champ = $("champCom");
+    if (!champ.value.startsWith(nom + " ")) champ.value = nom + " " + champ.value;
+    champ.focus();
+}
+function annulerReponse() {
+    cibleReponse = null;
+    $("cibleRep").hidden = true;
+}
+$("annulerRep").addEventListener("click", () => { annulerReponse(); $("champCom").value = ""; });
+
+// Un commentaire : photo de la personne, nom, texte, répondre, signaler
+function creerCarteCommentaire(c, estReponse, racineId) {
+    const mien = c.user_id === utilisateurActuel.id;
+    const nom = mien ? "Vous" : nomPublic(c.user_id, "Utilisateur " + String(c.user_id || "").slice(0, 8));
+    const carte = creerElement("div", "com" + (estReponse ? " rep" : ""));
+
+    const av = creerElement("div", "av-com");
+    remplirAvatar(av, c.user_id, nomPublic(c.user_id, "U"));
+    av.setAttribute("role", "button");
+    av.setAttribute("aria-label", "Voir le profil");
+    av.addEventListener("click", () => { fermerFeuilles(); ouvrirProfil(c.user_id); });
+
+    const corps = creerElement("div", "cc");
+    corps.append(
+        creerElement("b", "", nom + " · " + formaterDate(c.created_at)),
+        creerElement("span", "", c.contenu || "")
+    );
+
+    const act = creerElement("div", "com-act");
+    const rep = creerElement("button", "", "Répondre");
+    rep.type = "button";
+    rep.addEventListener("click", () => definirReponse(racineId, nomPublic(c.user_id, "Utilisateur")));
+    act.appendChild(rep);
+    if (!mien) {
+        const sig = creerElement("button", "", "⚑ Signaler");
+        sig.type = "button";
+        sig.addEventListener("click", () => {
+            fermerFeuilles();
+            ouvrirSignalement("commentaire", c.id, "Signaler ce commentaire de " + nom);
+        });
+        act.appendChild(sig);
+    }
+    corps.appendChild(act);
+    carte.append(av, corps);
+    return carte;
+}
+
+/* 4. FENÊTRES */
+function ouvrirFeuille(id) { $("fond").classList.add("on"); $(id).classList.add("on"); }
+function fermerFeuilles() {
+    $("fond").classList.remove("on");
+    document.querySelectorAll(".feuille").forEach(f => f.classList.remove("on"));
+}
+$("fond").addEventListener("click", fermerFeuilles);
+document.querySelectorAll("[data-fermer]").forEach(b => b.addEventListener("click", fermerFeuilles));
+$("boutonCreer").addEventListener("click", () => {
+    masquerMessage("messagePublication");
+    ouvrirFeuille("feuilleCreer");
+    setTimeout(() => contenuPublication.focus(), 300);
+});
+
+/* 5. SESSION */
+async function verifierSession() {
+    let session = null, erreur = null;
+    try {
+        const r = await supabaseClient.auth.getSession();
+        session = r.data && r.data.session;
+        erreur = r.error;
+    } catch (e) { erreur = e; }
+
+    // Hors ligne : on utilise la session enregistrée pour afficher le contenu sauvegardé.
+    if (erreur && CacheSelemani.horsLigne(erreur)) {
+        const local = CacheSelemani.utilisateurLocal();
+        if (local) { utilisateurActuel = local; CacheSelemani.init(local.id); return true; }
+    }
+    if (erreur) {
+        afficherMessage("messageFil", "Erreur de session : " + erreur.message, "erreur");
+        return false;
+    }
+    utilisateurActuel = session ? session.user : null;
+    if (!utilisateurActuel) {
+        window.location.replace("connexion.html");
+        return false;
+    }
+    CacheSelemani.init(utilisateurActuel.id);
+    return true;
+}
+
+/* 6. APERÇU */
+fichierMedia.addEventListener("change", function () {
+    const fichier = fichierMedia.files[0];
+    if (urlApercu) { URL.revokeObjectURL(urlApercu); urlApercu = null; }
+    apercuFichier.replaceChildren();
+    apercuFichier.style.display = "none";
+    masquerMessage("messagePublication");
+    if (!fichier) return;
+    const estImage = fichier.type.startsWith("image/");
+    const estVideo = fichier.type.startsWith("video/");
+    if (!estImage && !estVideo) {
+        fichierMedia.value = "";
+        afficherMessage("messagePublication", "Choisis une image ou une vidéo valide.", "erreur");
+        return;
+    }
+    if (fichier.size > 50 * 1024 * 1024) {
+        fichierMedia.value = "";
+        afficherMessage("messagePublication", "Le fichier dépasse la limite de 50 Mo.", "erreur");
+        return;
+    }
+    urlApercu = URL.createObjectURL(fichier);
+    const media = document.createElement(estImage ? "img" : "video");
+    media.src = urlApercu;
+    if (estVideo) { media.muted = true; media.playsInline = true; media.controls = true; }
+    apercuFichier.append(media, document.createTextNode("Fichier sélectionné : " + fichier.name));
+    apercuFichier.style.display = "block";
+});
+
+/* 7. ENVOI MÉDIA */
+async function envoyerMedia(fichier) {
+    if (!fichier) return { url: null, type: null };
+    const type = fichier.type.startsWith("video/") ? "video" : "image";
+    const extension = fichier.name.includes(".") ? fichier.name.split(".").pop().toLowerCase() : "bin";
+    const id = typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : Date.now() + "_" + Math.random().toString(36).slice(2);
+    const nomFichier = utilisateurActuel.id + "/" + Date.now() + "_" + id + "." + extension;
+    const { error } = await supabaseClient.storage.from("publications").upload(nomFichier, fichier, {
+        cacheControl: "3600", upsert: false, contentType: fichier.type
+    });
+    if (error) throw new Error("Envoi du média impossible : " + error.message);
+    const { data } = supabaseClient.storage.from("publications").getPublicUrl(nomFichier);
+    return { url: data.publicUrl, type };
+}
+
+/* 8. PUBLIER */
+formulairePublication.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    masquerMessage("messagePublication");
+    if (!utilisateurActuel) {
+        afficherMessage("messagePublication", "Ta session n'est pas disponible. Reconnecte-toi.", "erreur");
+        return;
+    }
+    const texte = contenuPublication.value.trim();
+    const fichier = fichierMedia.files[0];
+    if (!texte && !fichier) {
+        afficherMessage("messagePublication", "Écris un texte ou sélectionne une photo/vidéo.", "erreur");
+        return;
+    }
+    if (fichier && fichier.size > 50 * 1024 * 1024) {
+        afficherMessage("messagePublication", "La taille maximale autorisée est de 50 Mo.", "erreur");
+        return;
+    }
+    boutonPublier.disabled = true;
+    boutonPublier.textContent = "Publication...";
+    try {
+        let media = { url: null, type: null };
+        if (fichier) media = await envoyerMedia(fichier);
+        const { error } = await supabaseClient.from("publications").insert([{
+            user_id: utilisateurActuel.id,
+            nom_auteur: nomDepuisUtilisateur(),
+            contenu: texte,
+            media_url: media.url,
+            media_type: media.type
+        }]);
+        if (error) throw new Error(error.message);
+        contenuPublication.value = "";
+        fichierMedia.value = "";
+        if (urlApercu) { URL.revokeObjectURL(urlApercu); urlApercu = null; }
+        apercuFichier.replaceChildren();
+        apercuFichier.style.display = "none";
+        fermerFeuilles();
+        await chargerPublications();
+        filPublications.scrollTo({ top: 0, behavior: "smooth" });
+        afficherMessage("messageFil", "Publication publiée avec succès ! 🚀", "succes");
+        setTimeout(() => masquerMessage("messageFil"), 3000);
+    } catch (error) {
+        console.error("Erreur publication :", error);
+        afficherMessage("messagePublication", "Impossible de publier : " + error.message, "erreur");
+    } finally {
+        boutonPublier.disabled = false;
+        boutonPublier.textContent = "Publier";
+    }
+});
+
+/* 9. CHARGER LES PUBLICATIONS */
+async function chargerPublications() {
+    if (publicationsEnCours) return;
+    publicationsEnCours = true;
+    filPublications.replaceChildren(creerElement("div", "etat chargement", "Chargement des publications..."));
+    try {
+        let requete = supabaseClient.from("publications").select("*");
+        if (ongletFil === "abonnes") {
+            const suivis = [...abonnes];
+            if (!suivis.length) {
+                filPublications.replaceChildren(creerEtatSimple(
+                    "Tu ne suis personne pour le moment.\n\nSuis des profils depuis « Pour toi » pour voir leurs publications ici."));
+                masquerMessage("messageFil");
+                return;
+            }
+            requete = requete.in("user_id", suivis);
+        }
+        const { data: publicationsBrutes, error } = await requete
+            .order("created_at", { ascending: false }).limit(50);
+        if (error) throw new Error(error.message);
+        const publications = (publicationsBrutes || []).filter(pb => !bloques.has(pb.user_id));
+        await chargerProfils([...new Set((publications || []).map(pb => pb.user_id))]);
+
+        filPublications.replaceChildren();
+        if (!publications || publications.length === 0) {
+            filPublications.appendChild(creerEtatSimple(
+                "Bienvenue dans SELEMANI 2900 🚀\n\nAucune publication pour le moment.\nSois le premier à partager quelque chose !"));
+            masquerMessage("messageFil");
+            return;
+        }
+
+        const ids = publications.map(p => p.id);
+        const stats = {};
+        ids.forEach(id => { stats[id] = { likes: 0, commentaires: 0, aime: false }; });
+
+        const [rL, rC] = await Promise.all([
+            supabaseClient.from("likes").select("publication_id, user_id").in("publication_id", ids),
+            supabaseClient.from("commentaires").select("publication_id").in("publication_id", ids)
+        ]);
+        if (rL.error) console.warn("Likes :", rL.error.message);
+        if (rC.error) console.warn("Commentaires :", rC.error.message);
+
+        (rL.data || []).forEach(l => {
+            const s = stats[l.publication_id];
+            if (!s) return;
+            s.likes++;
+            if (l.user_id === utilisateurActuel.id) s.aime = true;
+        });
+        (rC.data || []).forEach(c => {
+            const s = stats[c.publication_id];
+            if (s) s.commentaires++;
+        });
+
+        CacheSelemani.set("fil_" + ongletFil, {
+            publications,
+            stats,
+            profils: Object.fromEntries([...new Set(publications.map(pb => pb.user_id))].map(i => [i, profils[i]]).filter(x => x[1]))
+        });
+        publications.forEach(p => filPublications.appendChild(creerCartePublication(p, stats[p.id])));
+        observerVideos();
+        masquerMessage("messageFil");
+    } catch (error) {
+        console.error("Erreur chargement :", error);
+        const copie = CacheSelemani.horsLigne(error) ? CacheSelemani.get("fil_" + ongletFil) : null;
+        if (copie) {
+            rendreCopie(copie.d);
+            afficherMessage("messageFil", "Hors ligne : contenu enregistré le " + CacheSelemani.dateTexte(copie.t) + ".", "info");
+            return;
+        }
+        const etat = creerEtatSimple("Impossible de charger les publications.");
+        const diag = creerElement("div", "diag", "Diagnostic en cours...");
+        const bloc = creerElement("div", "");
+        bloc.append(etat, diag);
+        etat.style.minHeight = "auto";
+        etat.style.padding = "90px 20px 0";
+        filPublications.replaceChildren(bloc);
+        afficherMessage("messageFil", "Erreur Supabase : " + error.message, "erreur");
+        lancerDiagnostic().then(t => { diag.textContent = t; });
+    } finally {
+        publicationsEnCours = false;
+    }
+}
+
+// Affiche le dernier fil enregistré (mode hors ligne).
+function rendreCopie(c) {
+    Object.assign(profils, c.profils || {});
+    filPublications.replaceChildren();
+    (c.publications || []).forEach(p => {
+        const st = (c.stats && c.stats[p.id]) || { likes: 0, commentaires: 0, aime: false };
+        filPublications.appendChild(creerCartePublication(p, st));
+    });
+    if (!filPublications.children.length) filPublications.appendChild(creerEtatSimple("Aucune publication enregistrée."));
+    observerVideos();
+}
+
+// Dès que la connexion revient, on recharge le fil.
+window.addEventListener("online", () => { if (utilisateurActuel) chargerPublications(); });
+
+/* 10. LECTURE AUTO DES VIDÉOS */
+function observerVideos() {
+    if (observateur) observateur.disconnect();
+    if (!("IntersectionObserver" in window)) return;
+    observateur = new IntersectionObserver(entrees => {
+        entrees.forEach(e => {
+            const v = e.target.querySelector("video.media");
+            if (!v) return;
+            if (e.isIntersecting) v.play().catch(() => {});
+            else v.pause();
+        });
+    }, { root: filPublications, threshold: 0.65 });
+    filPublications.querySelectorAll(".slide").forEach(s => observateur.observe(s));
+}
+
+/* 11. CARTE DE PUBLICATION */
+function creerCartePublication(publication, stats) {
+    const slide = creerElement("article", "slide");
+    slide.id = "publication-" + publication.id;
+    slide.dataset.postId = publication.id;
+    slide.dataset.auteur = publication.user_id;
+    const auteurNom = publication.nom_auteur || "Utilisateur";
+    let aime = stats.aime, nbLikes = stats.likes, nbCommentaires = stats.commentaires;
+    const like = creerBoutonAction("coeur", nbLikes);
+    const commentaire = creerBoutonAction("bulle", nbCommentaires);
+    const partage = creerBoutonAction("envoi", "Partager");
+    const favori = creerBoutonAction("bookmark", "Favori");
+    favori.b.classList.toggle("sauve", favoris.has(publication.id));
+    favori.b.addEventListener("click", async () => {
+        favori.b.disabled = true;
+        const sauve = await basculerFavori(publication.id);
+        favori.b.classList.toggle("sauve", sauve);
+        favori.b.disabled = false;
+        if (sauve) toast("Publication enregistrée dans tes favoris.", "succes");
+    });
+    like.b.classList.toggle("aime", aime);
+    const coeurAnime = creerElement("div", "coeur", "❤️");
+
+    async function basculerLike() {
+        if (like.b.disabled || !utilisateurActuel) return;
+        like.b.disabled = true;
+        const ancienEtat = aime, ancienNombre = nbLikes;
+        aime = !ancienEtat;
+        nbLikes = Math.max(0, ancienNombre + (aime ? 1 : -1));
+        like.b.classList.toggle("aime", aime);
+        like.n.textContent = String(nbLikes);
+        try {
+            let r;
+            if (aime) {
+                r = await supabaseClient.from("likes").insert([{ publication_id: publication.id, user_id: utilisateurActuel.id }]);
+            } else {
+                r = await supabaseClient.from("likes").delete()
+                    .eq("publication_id", publication.id).eq("user_id", utilisateurActuel.id);
+            }
+            if (r.error) throw new Error(r.error.message);
+        } catch (error) {
+            aime = ancienEtat; nbLikes = ancienNombre;
+            like.b.classList.toggle("aime", aime);
+            like.n.textContent = String(nbLikes);
+            console.error("Erreur like :", error);
+            afficherMessage("messageFil", "Impossible de modifier le like : " + error.message, "erreur");
+            setTimeout(() => masquerMessage("messageFil"), 4000);
+        } finally {
+            like.b.disabled = false;
+        }
+    }
+    like.b.addEventListener("click", basculerLike);
+
+    if (publication.media_url) {
+        const estVideo = publication.media_type === "video";
+        const media = document.createElement(estVideo ? "video" : "img");
+        media.className = "media";
+        media.src = publication.media_url;
+        if (estVideo) {
+            media.loop = true; media.muted = true; media.playsInline = true; media.preload = "metadata";
+            const boutonSon = creerElement("button", "son", "🔇");
+            boutonSon.type = "button";
+            boutonSon.setAttribute("aria-label", "Activer ou couper le son");
+            boutonSon.addEventListener("click", () => {
+                media.muted = !media.muted;
+                boutonSon.textContent = media.muted ? "🔇" : "🔊";
+            });
+            slide.append(media, boutonSon);
+        } else {
+            media.alt = "Photo publiée sur SELEMANI";
+            media.loading = "lazy";
+            slide.appendChild(media);
+        }
+        slide.appendChild(creerElement("div", "voile"));
+    } else {
+        slide.classList.add("txt");
+        slide.appendChild(creerElement("div", "gros", publication.contenu || ""));
+    }
+
+    slide.addEventListener("dblclick", event => {
+        if (event.target.closest("button")) return;
+        coeurAnime.classList.add("go");
+        setTimeout(() => coeurAnime.classList.remove("go"), 600);
+        if (!aime) basculerLike();
+    });
+    slide.appendChild(coeurAnime);
+
+    const info = creerElement("div", "info");
+    const lienAuteur = creerElement("div", "auteur", nomPublic(publication.user_id, nomAffiche(auteurNom)));
+    lienAuteur.style.pointerEvents = "auto";
+    lienAuteur.style.cursor = "pointer";
+    lienAuteur.addEventListener("click", () => ouvrirProfil(publication.user_id));
+    info.appendChild(lienAuteur);
+    if (publication.media_url && publication.contenu) info.appendChild(creerElement("div", "legende", publication.contenu));
+    info.appendChild(creerElement("div", "date", formaterDate(publication.created_at)));
+    slide.appendChild(info);
+
+    const rail = creerElement("div", "rail");
+    rail.append(creerAvatarAuteur(publication, auteurNom), like.b, commentaire.b, favori.b, partage.b);
+
+    // Supprimer sa propre publication
+    if (utilisateurActuel && publication.user_id === utilisateurActuel.id) {
+        const sup = creerBoutonAction("corbeille", "Suppr.");
+        sup.b.addEventListener("click", async () => {
+            if (!confirm("Supprimer définitivement cette publication ?")) return;
+            sup.b.disabled = true;
+            const { data, error } = await supabaseClient.from("publications").delete()
+                .eq("id", publication.id).eq("user_id", utilisateurActuel.id).select("id");
+            if (error || !data || !data.length) {
+                sup.b.disabled = false;
+                afficherMessage("messageFil", "Suppression impossible : " + (error ? error.message : "règle de suppression manquante dans Supabase."), "erreur");
+                setTimeout(() => masquerMessage("messageFil"), 4000);
+                return;
+            }
+            slide.remove();
+            afficherMessage("messageFil", "Publication supprimée.", "succes");
+            setTimeout(() => masquerMessage("messageFil"), 3000);
+        });
+        rail.appendChild(sup.b);
+    }
+    // Signaler ou bloquer l'auteur d'une publication qui n'est pas la tienne
+    if (utilisateurActuel && publication.user_id !== utilisateurActuel.id) {
+        const plus = creerBoutonAction("plus", "Plus");
+        plus.b.addEventListener("click", () => {
+            const nomAuteur = nomPublic(publication.user_id, nomAffiche(auteurNom));
+            ouvrirActions(nomAuteur, [
+                { texte: "⚑ Signaler cette publication", agir: () => ouvrirSignalement("publication", publication.id, "Signaler cette publication de " + nomAuteur) },
+                { texte: "🚫 Bloquer " + nomAuteur, danger: true, agir: async () => {
+                    if (confirm("Bloquer " + nomAuteur + " ? Tu ne verras plus ses publications ni ses commentaires.")) await bloquer(publication.user_id);
+                } }
+            ]);
+        });
+        rail.appendChild(plus.b);
+    }
+    slide.appendChild(rail);
+
+    commentaire.b.addEventListener("click", () => {
+        pubCommentee = {
+            id: publication.id,
+            nb: () => nbCommentaires,
+            maj: n => { nbCommentaires = n; commentaire.n.textContent = String(n); }
+        };
+        masquerMessage("messageFil");
+        annulerReponse();
+        $("champCom").value = "";
+        ouvrirFeuille("feuilleCom");
+        chargerCommentaires(publication.id, $("listeCom"));
+    });
+
+    partage.b.addEventListener("click", async () => {
+        const adresse = new URL(window.location.href);
+        adresse.hash = "publication-" + publication.id;
+        const lien = adresse.href;
+        const texte = publication.contenu ? publication.contenu.slice(0, 150) : "Découvre cette publication sur SELEMANI 2900 !";
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: "SELEMANI 2900", text: texte, url: lien });
+            } else if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(lien);
+                afficherMessage("messageFil", "Lien copié ! Partage-le avec tes amis. 🚀", "succes");
+                setTimeout(() => masquerMessage("messageFil"), 3000);
+            } else {
+                window.prompt("Copie ce lien pour partager la publication :", lien);
+            }
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                console.error("Erreur partage :", error);
+                afficherMessage("messageFil", "Le partage a échoué. Réessaie.", "erreur");
+            }
+        }
+    });
+
+    return slide;
+}
+
+/* 12. COMMENTAIRES */
+async function chargerCommentaires(publicationId, conteneur) {
+    conteneur.replaceChildren(creerElement("div", "vide", "Chargement des commentaires..."));
+    try {
+        const { data, error } = await supabaseClient.from("commentaires")
+            .select("id, user_id, contenu, created_at, parent_id")
+            .eq("publication_id", publicationId)
+            .order("created_at", { ascending: true }).limit(200);
+        if (error) throw new Error(error.message);
+        const liste = (data || []).filter(c => !bloques.has(c.user_id));
+        await chargerProfils([...new Set(liste.map(c => c.user_id))]);
+        conteneur.replaceChildren();
+        if (!liste.length) {
+            conteneur.appendChild(creerElement("div", "vide", "Aucun commentaire pour le moment. Sois le premier !"));
+            return;
+        }
+        const racines = liste.filter(c => !c.parent_id || !liste.some(p => p.id === c.parent_id));
+        racines.forEach(c => {
+            conteneur.appendChild(creerCarteCommentaire(c, false, c.id));
+            liste.filter(r => r.parent_id === c.id).forEach(r => {
+                conteneur.appendChild(creerCarteCommentaire(r, true, c.id));
+            });
+        });
+        conteneur.scrollTop = conteneur.scrollHeight;
+    } catch (error) {
+        console.error("Erreur commentaires :", error);
+        conteneur.replaceChildren(creerElement("div", "vide", "Impossible de charger les commentaires : " + error.message));
+    }
+}
+
+/* 13. ENVOYER UN COMMENTAIRE */
+$("formCom").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const champ = $("champCom"), bouton = $("boutonCom");
+    const texte = champ.value.trim();
+    if (!utilisateurActuel || !pubCommentee || !texte) return;
+    bouton.disabled = true;
+    bouton.textContent = "Envoi...";
+    try {
+        const { error } = await supabaseClient.from("commentaires").insert([{
+            publication_id: pubCommentee.id, user_id: utilisateurActuel.id, contenu: texte,
+            parent_id: cibleReponse ? cibleReponse.id : null
+        }]);
+        if (error) throw new Error(error.message);
+        champ.value = "";
+        annulerReponse();
+        pubCommentee.maj(pubCommentee.nb() + 1);
+        await chargerCommentaires(pubCommentee.id, $("listeCom"));
+    } catch (error) {
+        console.error("Erreur commentaire :", error);
+        afficherMessage("messageFil", "Impossible d'envoyer le commentaire : " + error.message, "erreur");
+        setTimeout(() => masquerMessage("messageFil"), 4000);
+    } finally {
+        bouton.disabled = false;
+        bouton.textContent = "Envoyer";
+    }
+});
+
+/* 14. ONGLETS : Pour toi = tout le monde, Abonnés = les profils que tu suis */
+function choisirOnglet(nom) {
+    ongletFil = nom;
+    $("ongletPourToi").classList.toggle("actif", nom === "pourtoi");
+    $("ongletAbonnes").classList.toggle("actif", nom === "abonnes");
+    filPublications.scrollTo({ top: 0, behavior: "smooth" });
+    chargerPublications();
+}
+$("ongletPourToi").addEventListener("click", () => choisirOnglet("pourtoi"));
+$("ongletAbonnes").addEventListener("click", () => choisirOnglet("abonnes"));
+
+/* 15. DÉCONNEXION */
+$("boutonDeconnexion").addEventListener("click", async function () {
+    const bouton = this;
+    bouton.disabled = true;
+    bouton.textContent = "...";
+    try {
+        if (window.CacheSelemani) CacheSelemani.viderTout();
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw new Error(error.message);
+        window.location.replace("connexion.html");
+    } catch (error) {
+        afficherMessage("messageFil", "Erreur de déconnexion : " + error.message, "erreur");
+        bouton.disabled = false;
+        bouton.textContent = "Quitter";
+    }
+});
+
+/* 16. DÉMARRAGE */
+async function demarrerAccueil() {
+    const ok = await verifierSession();
+    if (!ok) return;
+    await chargerMesAbonnements();
+    await chargerMesBlocagesEtFavoris();
+    await chargerPublications();
+    majBadgeMessages();
+    majBadgeNotifs();
+    if (location.hash.startsWith("#publication-")) {
+        const id = decodeURIComponent(location.hash.slice(1));
+        setTimeout(() => {
+            const cible = $(id);
+            if (cible) cible.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+    }
+}
+demarrerAccueil();
+</script>
+</body>
+</html>

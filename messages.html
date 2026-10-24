@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Messages — SELEMANI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12);--carte:#111827}
+html,body{height:100%;overflow:hidden;background:var(--fond);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{display:flex;justify-content:center;background:radial-gradient(700px 500px at 10% 20%,rgba(139,92,246,.22),transparent),radial-gradient(700px 500px at 90% 80%,rgba(34,230,255,.16),transparent),var(--fond)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{opacity:.5;cursor:wait}
+.app{position:relative;width:100%;max-width:560px;height:100dvh;background:#05060c;box-shadow:0 0 80px rgba(34,230,255,.12),0 0 0 1px var(--bd);overflow:hidden}
+.vue{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .28s ease}
+#vueChat{transform:translateX(100%);background:#05060c}
+.app.chat #vueChat{transform:none}
+.app.chat #vueListe{transform:translateX(-20%)}
+.barre{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;background:rgba(5,6,12,.92);border-bottom:1px solid var(--bd);backdrop-filter:blur(16px)}
+.logo{font-weight:900;font-size:18px;letter-spacing:2px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.titre{flex:1;font-weight:800;font-size:17px}
+.retour{width:40px;height:40px;border-radius:12px;border:1px solid var(--bd);font-size:22px;display:grid;place-items:center}
+.av{width:46px;height:46px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:18px;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.liste{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+.liste::-webkit-scrollbar{display:none}
+.conv{display:flex;align-items:center;gap:13px;width:100%;padding:12px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}
+.conv:active{background:rgba(255,255,255,.05)}
+.conv .c{flex:1;min-width:0}
+.conv .l1{display:flex;justify-content:space-between;gap:8px}
+.conv b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv time{font-size:11px;color:var(--tx2);flex-shrink:0}
+.conv p{margin-top:4px;font-size:13px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vide{text-align:center;color:var(--tx2);padding:60px 28px;line-height:1.8;font-size:14px;white-space:pre-line}
+.fab{position:absolute;right:18px;bottom:calc(84px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:18px;font-size:28px;color:#fff;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 26px rgba(34,230,255,.45);z-index:5}
+.nav{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(4,5,10,.92);border-top:1px solid var(--bd);backdrop-filter:blur(18px)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;color:var(--tx2);text-decoration:none;font-size:10px}
+.nav .i{font-size:21px}.nav .actif{color:#fff}
+.nav .plus .i{width:47px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:25px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 20px rgba(34,230,255,.5)}
+.entete-chat{flex:1;min-width:0}
+.entete-chat b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entete-chat span{font-size:11px;color:var(--cy)}
+.fil{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px;scrollbar-width:none;background-image:linear-gradient(rgba(34,230,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(34,230,255,.035) 1px,transparent 1px);background-size:34px 34px}
+.fil::-webkit-scrollbar{display:none}
+.jour{align-self:center;margin:8px 0;padding:4px 12px;border-radius:99px;font-size:11px;color:var(--tx2);background:rgba(255,255,255,.07)}
+.bulle{max-width:82%;padding:8px 11px 6px;border-radius:16px 16px 16px 4px;background:var(--carte);border:1px solid var(--bd);overflow-wrap:anywhere}
+.bulle.moi{align-self:flex-end;border-radius:16px 16px 4px 16px;border-color:rgba(34,230,255,.35);background:linear-gradient(135deg,rgba(34,230,255,.2),rgba(139,92,246,.28) 60%,rgba(255,46,147,.2))}
+.bulle .t{font-size:14.5px;line-height:1.5;white-space:pre-wrap}
+.bulle time{display:block;margin-top:3px;text-align:right;font-size:10px;color:#b9c3da}
+.bulle audio{display:block;width:230px;max-width:100%;height:40px}
+.zone{padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:flex-end;gap:8px;background:rgba(5,6,12,.95);border-top:1px solid var(--bd)}
+.zone textarea{flex:1;min-width:0;min-height:46px;max-height:120px;resize:none;padding:12px 16px;border-radius:24px;border:1px solid var(--bd);background:#0b0e18;outline:none;font-size:15px;line-height:1.4}
+.zone textarea:focus{border-color:var(--cy)}
+.rond{width:46px;height:46px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:20px;color:#fff;background:linear-gradient(135deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 18px rgba(139,92,246,.35)}
+.rond.rec{background:#ff304b;animation:p 1s infinite}
+@keyframes p{50%{opacity:.55}}
+.nav a{position:relative}
+.badge{position:absolute;top:-3px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--mg);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 10px rgba(255,46,147,.7)}
+.pastille{min-width:21px;height:21px;padding:0 6px;border-radius:99px;background:linear-gradient(135deg,var(--cy),var(--mg));color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;flex-shrink:0}
+.conv .l2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}
+.conv .l2 p{margin-top:0;flex:1;min-width:0}
+.conv.nonlu b,.conv.nonlu p,.conv.nonlu time{color:#fff;font-weight:700}
+.enreg{flex:1;display:none;align-items:center;gap:10px;min-width:0}
+.zone.enregistrement .enreg{display:flex}
+.zone.enregistrement textarea,.zone.enregistrement #micro,.zone.enregistrement #envoyer{display:none!important}
+.point{width:12px;height:12px;flex-shrink:0;border-radius:50%;background:#ff304b;animation:p 1s infinite}
+.point.pause{animation:none;opacity:.4}
+.chrono{min-width:44px;font-variant-numeric:tabular-nums;font-weight:800}
+.etatrec{flex:1;min-width:0;font-size:12px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.petit{width:42px;height:42px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:18px;background:#141a2b;border:1px solid var(--bd)}
+.cache{display:none!important}
+.statuts{display:flex;gap:14px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--bd)}
+.statuts::-webkit-scrollbar{display:none}
+.st{flex-shrink:0;width:66px;text-align:center;font-size:11px;color:var(--tx2)}
+.st .nom{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.anneau{position:relative;width:62px;height:62px;margin:0 auto 5px;padding:3px;border-radius:50%;background:rgba(255,255,255,.12)}
+.anneau.nonvu{background:conic-gradient(var(--cy),var(--vi),var(--mg),var(--cy))}
+.anneau.vu{background:rgba(255,255,255,.3)}
+.anneau .av{width:100%;height:100%;border:3px solid #05060c}
+.plus-st{position:absolute;right:-3px;bottom:-3px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--cy),var(--mg));border:2px solid #05060c}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:14px;font-weight:850;font-size:13px;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg))}
+.btn.sec{background:#141a2b;border:1px solid var(--bd)}
+.apercu-st{position:relative;height:170px;margin-bottom:10px;padding:14px;display:grid;place-items:center;overflow:hidden;border-radius:16px;background:#0b0e18;text-align:center;font-weight:800;font-size:18px;line-height:1.4;overflow-wrap:anywhere}
+.apercu-st img,.apercu-st video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.apercu-st .retirer{position:absolute;right:8px;top:8px;z-index:2;width:32px;height:32px;border-radius:50%;background:#000a;font-size:15px}
+.couleurs{display:flex;gap:10px;margin:2px 0 12px}
+.couleurs button{width:34px;height:34px;border-radius:50%;border:2px solid transparent}
+.couleurs button.on{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.5)}
+.ligne-st{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.aide-st{margin-top:12px;font-size:12px;color:var(--tx2);line-height:1.5}
+.visionneuse{position:absolute;inset:0;z-index:80;display:none;flex-direction:column;background:#000}
+.visionneuse.on{display:flex}
+.vbarres{display:flex;gap:4px;padding:calc(10px + env(safe-area-inset-top)) 10px 6px}
+.vbarres i{flex:1;height:3px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.3)}
+.vbarres i b{display:block;width:0;height:100%;background:#fff}
+.vbarres i.fait b{width:100%}
+.vtete{display:flex;align-items:center;gap:10px;padding:4px 12px 8px}
+.vtete .av{width:38px;height:38px;font-size:15px}
+.vtete .qui{flex:1;min-width:0;font-weight:800;font-size:14px}
+.vtete .qui span{display:block;font-weight:500;font-size:11px;color:#c9d1e6}
+.vfermer{font-size:24px;padding:4px 8px}
+.vcadre{position:relative;flex:1;display:flex;min-height:0}
+.vcorps{flex:1;position:relative;display:grid;place-items:center;overflow:hidden}
+.vcorps img,.vcorps video{max-width:100%;max-height:100%;object-fit:contain}
+.vtexte{width:100%;height:100%;padding:28px;display:grid;place-items:center;text-align:center;font-size:26px;font-weight:850;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.vlegende{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 18px;background:linear-gradient(transparent,#000c);text-align:center;font-size:15px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;z-index:1}
+.vzone{position:absolute;top:0;bottom:0;z-index:2}
+.vzone.g{left:0;width:33%}.vzone.d{right:0;width:67%}
+.vmien{display:none;justify-content:space-between;align-items:center;padding:10px 16px calc(12px + env(safe-area-inset-bottom));background:#000}
+.vmien button{padding:9px 14px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;font-weight:700}
+.pvues{display:none;position:absolute;left:0;right:0;bottom:0;z-index:5;max-height:55%;overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#0b0e18;border-top:1px solid var(--bd)}
+.fond{position:absolute;inset:0;z-index:40;background:#000b;opacity:0;pointer-events:none;transition:.25s}
+.fond.on{opacity:1;pointer-events:auto}
+.feuille{position:absolute;z-index:41;left:0;right:0;bottom:0;max-height:80%;display:flex;flex-direction:column;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:#0b0e18;border:1px solid var(--bd);border-radius:24px 24px 0 0;transform:translateY(105%);transition:.3s}
+.feuille.on{transform:none}
+.fe-t{display:flex;justify-content:space-between;margin-bottom:12px;font-weight:800}
+.fe-t button{font-size:22px;color:var(--tx2)}
+.champ{width:100%;padding:13px;border-radius:14px;border:1px solid var(--bd);background:#05070d;outline:none;font-size:14px;margin-bottom:10px}
+.champ:focus{border-color:var(--cy)}
+.res{overflow-y:auto;min-height:60px}
+.message{position:absolute;z-index:70;left:14px;right:14px;top:calc(64px + env(safe-area-inset-top));padding:11px;border-radius:12px;font-size:13px;overflow-wrap:anywhere;display:none}
+.message.erreur{display:block;background:rgba(255,46,100,.95)}
+.message.succes{display:block;background:rgba(34,197,94,.95)}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="cachelocal.js"></script>
+<script src="pwa.js" defer></script>
+</head>
+<body>
+<div class="app" id="app">
+<div id="message" class="message" role="status" aria-live="polite"></div>
+
+<section class="vue" id="vueListe">
+  <div class="barre"><div class="logo">SELEMANI</div><div class="titre" style="text-align:right">Messages</div></div>
+  <div class="statuts" id="barreStatuts" aria-label="Statuts"></div>
+  <div class="liste" id="liste"><div class="vide">Chargement...</div></div>
+  <button class="fab" id="nouveau" type="button" aria-label="Nouvelle conversation">✎</button>
+  <nav class="nav">
+    <a href="accueil.html"><span class="i">⌂</span>Accueil</a>
+    <a href="messages.html" class="actif"><span class="i">✉</span>Messages<span class="badge cache" id="badgeNav"></span></a>
+    <a href="creer.html" class="plus"><span class="i">+</span><span>Créer</span></a>
+    <a href="notifications.html"><span class="i">🔔</span>Notifs</a>
+    <a href="profil.html"><span class="i">♙</span>Profil</a>
+  </nav>
+</section>
+
+<section class="vue" id="vueChat">
+  <div class="barre">
+    <button class="retour" id="retour" type="button" aria-label="Retour">‹</button>
+    <div class="av" id="chatAv">S</div>
+    <div class="entete-chat"><b id="chatNom">Conversation</b><span>Messagerie sécurisée</span></div>
+  </div>
+  <div class="fil" id="fil"></div>
+  <div class="zone" id="zoneSaisie">
+    <textarea id="texte" rows="1" maxlength="4000" placeholder="Écrire un message" aria-label="Votre message"></textarea>
+    <button class="rond" id="envoyer" type="button" aria-label="Envoyer">➤</button>
+    <button class="rond" id="micro" type="button" aria-label="Message vocal">🎙</button>
+    <div class="enreg">
+      <span class="point" id="point"></span>
+      <span class="chrono" id="chrono">0:00</span>
+      <span class="etatrec" id="etatRec">Enregistrement...</span>
+      <button class="petit" id="recAnnuler" type="button" aria-label="Annuler">🗑</button>
+      <button class="petit" id="recPause" type="button" aria-label="Pause">⏸</button>
+      <button class="rond" id="recEnvoyer" type="button" aria-label="Envoyer le vocal">➤</button>
+    </div>
+  </div>
+</section>
+
+<div class="visionneuse" id="visionneuse" role="dialog" aria-label="Statut">
+  <div class="vbarres" id="vbarres"></div>
+  <div class="vtete">
+    <div class="av" id="vAv">S</div>
+    <div class="qui"><b id="vNomTexte"></b><span id="vTemps"></span></div>
+    <button class="vfermer" id="vFermer" type="button" aria-label="Fermer">✕</button>
+  </div>
+  <div class="vcadre">
+    <div class="vcorps" id="vcorps"></div>
+    <div class="vzone g" id="vg"></div>
+    <div class="vzone d" id="vd"></div>
+  </div>
+  <div class="vmien" id="vmien">
+    <button id="vNb" type="button">👁 0</button>
+    <button id="vSup" type="button">🗑 Supprimer</button>
+  </div>
+  <div class="pvues" id="pvues">
+    <div class="fe-t"><span>Vu par</span><button type="button" id="pvuesFermer" aria-label="Fermer">✕</button></div>
+    <div id="listeVues"></div>
+  </div>
+</div>
+
+<div class="fond" id="fond"></div>
+<section class="feuille" id="feuilleStatut" aria-label="Nouveau statut">
+  <div class="fe-t"><span>Nouveau statut ✨</span><button type="button" id="fermerStatut" aria-label="Fermer">✕</button></div>
+  <div class="apercu-st" id="apercuStatut"></div>
+  <textarea class="champ" id="texteStatut" maxlength="300" placeholder="Écris ton statut..." style="min-height:80px;resize:none"></textarea>
+  <div class="couleurs" id="couleursStatut"></div>
+  <input type="file" id="fichierStatut" accept="image/*,video/*" hidden>
+  <div class="ligne-st">
+    <label for="fichierStatut" class="btn sec">📷 Photo / Vidéo</label>
+    <button type="button" class="btn" id="publierStatut">Publier</button>
+  </div>
+  <p class="aide-st">Ton statut disparaît après 24 h. Il est visible par les personnes qui te suivent.</p>
+</section>
+<section class="feuille" id="feuilleNouveau" aria-label="Nouvelle conversation">
+  <div class="fe-t"><span>Nouvelle conversation ✉</span><button type="button" id="fermer" aria-label="Fermer">✕</button></div>
+  <input class="champ" id="recherche" placeholder="Chercher un nom d'utilisateur..." autocomplete="off" spellcheck="false">
+  <div class="res" id="resultats"><div class="vide">Tape au moins 2 lettres.</div></div>
+</section>
+</div>
+
+<script>
+"use strict";
+
+// Configuration Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+const $ = id => document.getElementById(id);
+const el = (tag, classe, texte) => {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+};
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+if (!window.supabase) {
+  $("liste").replaceChildren(el("div", "vide", "La bibliothèque Supabase n'a pas pu se charger.\nVérifie ta connexion et recharge."));
+  throw new Error("supabase-js non chargé");
+}
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let moi = null;
+let courant = null;          // id du correspondant ouvert
+let profils = {};            // cache id -> {nom_utilisateur, photo_profil}
+let derniers = {};           // id -> dernier message
+let nonLus = {};             // id -> nombre de messages non lus
+let canal = null;
+let envoi = false;
+let rec = null, morceaux = [], flux = null, enregistre = false;
+let minuterie = null;
+
+function notice(texte, type = "erreur") {
+  const m = $("message");
+  m.textContent = texte;
+  m.className = "message " + type;
+  clearTimeout(minuterie);
+  minuterie = setTimeout(() => { m.className = "message"; }, 4000);
+}
+
+function lien(v) { return typeof v === "string" && /^https?:\/\//i.test(v) ? v : ""; }
+function nomDe(id) {
+  const p = profils[id];
+  return p && p.nom_utilisateur ? "@" + p.nom_utilisateur : "Utilisateur " + String(id).slice(0, 6);
+}
+function remplirAvatar(div, id) {
+  div.replaceChildren();
+  const p = profils[id];
+  const url = p ? lien(p.photo_profil) : "";
+  if (url) {
+    const i = document.createElement("img");
+    i.src = url; i.alt = "";
+    i.onerror = () => { div.textContent = initiale(id); };
+    div.appendChild(i);
+  } else {
+    div.textContent = initiale(id);
+  }
+}
+function initiale(id) {
+  const p = profils[id];
+  return ((p && p.nom_utilisateur ? p.nom_utilisateur : "S").charAt(0) || "S").toUpperCase();
+}
+function heure(d) {
+  return new Date(d).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+function jourTexte(d) {
+  const x = new Date(d), a = new Date();
+  const h = new Date(); h.setDate(a.getDate() - 1);
+  if (x.toDateString() === a.toDateString()) return "Aujourd'hui";
+  if (x.toDateString() === h.toDateString()) return "Hier";
+  return x.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+}
+function heureListe(d) {
+  const x = new Date(d);
+  return x.toDateString() === new Date().toDateString()
+    ? heure(d)
+    : x.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+}
+function apercu(m) {
+  const t = m.type === "vocal" ? "🎙 Message vocal" : (m.contenu || "");
+  return (m.expediteur_id === moi.id ? "Vous : " : "") + t;
+}
+
+async function chargerProfils(ids) {
+  const manquants = ids.filter(i => i && !profils[i]);
+  if (!manquants.length) return;
+  const { data, error } = await db.from("profils").select("id,nom_utilisateur,photo_profil").in("id", manquants);
+  if (error) { console.warn("Profils :", error.message); return; }
+  (data || []).forEach(p => { profils[p.id] = p; });
+}
+
+/* ---------- Liste des conversations ---------- */
+async function chargerConversations() {
+  const { data, error } = await db.from("messages")
+    .select("id,expediteur_id,destinataire_id,contenu,type,media_url,created_at,lu")
+    .or(`expediteur_id.eq.${moi.id},destinataire_id.eq.${moi.id}`)
+    .order("created_at", { ascending: false })
+    .limit(400);
+
+  if (error) {
+    const copie = CacheSelemani.horsLigne(error) ? CacheSelemani.get("conversations") : null;
+    if (copie) {
+      derniers = copie.d.derniers || {};
+      nonLus = copie.d.nonLus || {};
+      Object.assign(profils, copie.d.profils || {});
+      dessinerListe();
+      notice("Hors ligne : conversations enregistrées le " + CacheSelemani.dateTexte(copie.t) + ".", "succes");
+      return;
+    }
+    $("liste").replaceChildren(el("div", "vide", "Impossible de charger les messages.\n" + error.message));
+    return;
+  }
+
+  derniers = {};
+  nonLus = {};
+  (data || []).forEach(m => {
+    const autre = m.expediteur_id === moi.id ? m.destinataire_id : m.expediteur_id;
+    if (!derniers[autre]) derniers[autre] = m;
+    if (m.destinataire_id === moi.id && !m.lu) nonLus[autre] = (nonLus[autre] || 0) + 1;
+  });
+
+  // Les conversations avec les personnes bloquées sont masquées.
+  try {
+    const bl = await db.from("blocages").select("bloque_id").eq("bloqueur_id", moi.id);
+    if (!bl.error) (bl.data || []).forEach(b => { delete derniers[b.bloque_id]; delete nonLus[b.bloque_id]; });
+  } catch (e) { /* ignoré */ }
+
+  const ids = Object.keys(derniers);
+  await chargerProfils(ids);
+  dessinerListe();
+  majBadge();
+  CacheSelemani.set("conversations", {
+    derniers,
+    nonLus,
+    profils: Object.fromEntries(ids.map(i => [i, profils[i]]).filter(x => x[1]))
+  });
+}
+
+function dessinerListe() {
+  const liste = $("liste");
+  liste.replaceChildren();
+  const ids = Object.keys(derniers).sort((a, b) =>
+    new Date(derniers[b].created_at) - new Date(derniers[a].created_at));
+
+  if (!ids.length) {
+    liste.appendChild(el("div", "vide", "Aucune conversation pour le moment.\nAppuie sur ✎ pour écrire à quelqu'un."));
+    return;
+  }
+
+  ids.forEach(id => {
+    const b = el("button", "conv");
+    b.type = "button";
+    const av = el("div", "av");
+    remplirAvatar(av, id);
+    const c = el("div", "c");
+    const l1 = el("div", "l1");
+    l1.append(el("b", "", nomDe(id)), el("time", "", heureListe(derniers[id].created_at)));
+    const l2 = el("div", "l2");
+    l2.appendChild(el("p", "", apercu(derniers[id])));
+    if (nonLus[id] > 0) {
+      l2.appendChild(el("span", "pastille", nonLus[id] > 99 ? "99+" : String(nonLus[id])));
+      b.classList.add("nonlu");
+    }
+    c.append(l1, l2);
+    b.append(av, c);
+    b.addEventListener("click", () => ouvrirChat(id));
+    liste.appendChild(b);
+  });
+}
+
+/* ---------- Conversation ---------- */
+function ajouterBulle(m, etat) {
+  const fil = $("fil");
+  const jour = new Date(m.created_at).toDateString();
+  if (etat.jour !== jour) {
+    fil.appendChild(el("div", "jour", jourTexte(m.created_at)));
+    etat.jour = jour;
+  }
+  const b = el("article", "bulle" + (m.expediteur_id === moi.id ? " moi" : ""));
+  if (m.type === "vocal" && m.media_url) {
+    const a = document.createElement("audio");
+    a.controls = true; a.preload = "none"; a.src = m.media_url;
+    a.setAttribute("aria-label", "Message vocal");
+    b.appendChild(a);
+  } else {
+    b.appendChild(el("div", "t", m.contenu || ""));
+  }
+  const t = el("time", "", heure(m.created_at));
+  t.dateTime = m.created_at;
+  b.appendChild(t);
+  fil.appendChild(b);
+}
+
+let etatFil = { jour: "" };
+
+async function chargerChat() {
+  if (!courant) return;
+  const id = courant;
+  const { data, error } = await db.from("messages")
+    .select("id,expediteur_id,destinataire_id,contenu,type,media_url,created_at,lu")
+    .or(`and(expediteur_id.eq.${moi.id},destinataire_id.eq.${id}),and(expediteur_id.eq.${id},destinataire_id.eq.${moi.id})`)
+    .order("created_at", { ascending: true })
+    .limit(300);
+
+  if (id !== courant) return;
+  if (error) {
+    const copie = CacheSelemani.horsLigne(error) ? CacheSelemani.get("chat_" + id) : null;
+    if (copie) { rendreChat(copie.d); notice("Hors ligne : messages enregistrés le " + CacheSelemani.dateTexte(copie.t) + ".", "succes"); return; }
+    notice("Impossible de charger la conversation : " + error.message);
+    return;
+  }
+
+  rendreChat(data);
+  CacheSelemani.set("chat_" + id, (data || []).slice(-100));
+  marquerLus(id);
+}
+
+function rendreChat(data) {
+  const fil = $("fil");
+  fil.replaceChildren();
+  etatFil = { jour: "" };
+  if (!data || !data.length) {
+    fil.appendChild(el("div", "vide", "Dis bonjour 👋\nVos messages apparaîtront ici."));
+  } else {
+    data.forEach(m => ajouterBulle(m, etatFil));
+  }
+  fil.scrollTop = fil.scrollHeight;
+}
+
+// Pastille rouge sur le bouton Messages : nombre total de messages non lus.
+async function majBadge() {
+  if (!moi) return;
+  const { count, error } = await db.from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("destinataire_id", moi.id).eq("lu", false);
+  if (error) { console.warn("Non lus :", error.message); return; }
+  const b = $("badgeNav");
+  b.textContent = count > 99 ? "99+" : String(count || 0);
+  b.classList.toggle("cache", !count);
+}
+
+// Marque comme lus les messages reçus de ce correspondant.
+async function marquerLus(id) {
+  const { error } = await db.from("messages").update({ lu: true })
+    .eq("destinataire_id", moi.id).eq("expediteur_id", id).eq("lu", false);
+  if (error) { console.warn("Lecture :", error.message); return; }
+  nonLus[id] = 0;
+  majBadge();
+}
+
+async function ouvrirChat(id) {
+  courant = id;
+  await chargerProfils([id]);
+  $("chatNom").textContent = nomDe(id);
+  remplirAvatar($("chatAv"), id);
+  $("app").classList.add("chat");
+  fermerFeuille();
+  $("fil").replaceChildren(el("div", "vide", "Chargement..."));
+  majBoutons();
+  await chargerChat();
+}
+
+function fermerChat() {
+  courant = null;
+  $("app").classList.remove("chat");
+  chargerConversations();
+}
+$("retour").addEventListener("click", fermerChat);
+
+/* ---------- Envoi ---------- */
+function majBoutons() {
+  const aTexte = $("texte").value.trim().length > 0;
+  $("envoyer").classList.toggle("cache", !aTexte);
+  $("micro").classList.toggle("cache", aTexte);
+}
+$("texte").addEventListener("input", () => {
+  const t = $("texte");
+  t.style.height = "auto";
+  t.style.height = Math.min(t.scrollHeight, 120) + "px";
+  majBoutons();
+});
+
+async function enregistrerMessage(champs) {
+  const { data, error } = await db.from("messages").insert({
+    expediteur_id: moi.id,
+    destinataire_id: courant,
+    ...champs
+  }).select("id,expediteur_id,destinataire_id,contenu,type,media_url,created_at,lu").single();
+  if (error) throw error;
+  return data;
+}
+
+async function envoyerTexte() {
+  if (envoi || !courant) return;
+  const contenu = $("texte").value.trim();
+  if (!contenu) return;
+  envoi = true;
+  $("envoyer").disabled = true;
+  try {
+    const m = await enregistrerMessage({ contenu, type: "texte", media_url: null });
+    $("texte").value = "";
+    $("texte").style.height = "auto";
+    majBoutons();
+    const fil = $("fil");
+    if (fil.querySelector(".vide")) fil.replaceChildren();
+    ajouterBulle(m, etatFil);
+    fil.scrollTop = fil.scrollHeight;
+    derniers[courant] = m;
+  } catch (e) {
+    notice(CacheSelemani.horsLigne(e) ? "Tu es hors ligne : message non envoyé." : /row-level security/i.test(e.message) ? "Tu ne peux pas écrire à cette personne." : "Envoi impossible : " + e.message);
+  } finally {
+    envoi = false;
+    $("envoyer").disabled = false;
+  }
+}
+$("envoyer").addEventListener("click", envoyerTexte);
+$("texte").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    e.preventDefault();
+    envoyerTexte();
+  }
+});
+
+/* ---------- Message vocal ---------- */
+let annule = false, debutRec = 0, dureeAvant = 0, chrono = null, enPause = false;
+
+function arreterFlux() {
+  if (flux) { flux.getTracks().forEach(p => p.stop()); flux = null; }
+}
+function dureeRec() {
+  return dureeAvant + (enPause ? 0 : Date.now() - debutRec);
+}
+function majChrono() {
+  const s = Math.floor(dureeRec() / 1000);
+  $("chrono").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
+function finEnregistrementUI() {
+  clearInterval(chrono);
+  enregistre = false;
+  enPause = false;
+  $("zoneSaisie").classList.remove("enregistrement");
+  $("point").classList.remove("pause");
+  $("recPause").textContent = "⏸";
+  $("etatRec").textContent = "Enregistrement...";
+  $("chrono").textContent = "0:00";
+  majBoutons();
+}
+
+async function envoyerVocal(blob) {
+  const cible = courant;
+  const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+  const chemin = moi.id + "/" + (crypto.randomUUID ? crypto.randomUUID() : Date.now()) + "." + ext;
+  notice("Envoi du message vocal...", "succes");
+  const { error: eu } = await db.storage.from("messages-vocaux").upload(chemin, blob, {
+    contentType: blob.type || "audio/webm", upsert: false
+  });
+  if (eu) { notice("Vocal impossible : " + eu.message + " (vérifie le bucket messages-vocaux)."); return; }
+  const url = db.storage.from("messages-vocaux").getPublicUrl(chemin).data.publicUrl;
+  try {
+    const m = await enregistrerMessage({ contenu: "Message vocal", type: "vocal", media_url: url });
+    derniers[cible] = m;
+    if (cible === courant) {
+      const fil = $("fil");
+      if (fil.querySelector(".vide")) fil.replaceChildren();
+      ajouterBulle(m, etatFil);
+      fil.scrollTop = fil.scrollHeight;
+    }
+    notice("Message vocal envoyé.", "succes");
+  } catch (e) {
+    notice("Vocal téléversé mais non enregistré : " + e.message);
+  }
+}
+
+// Démarre l'enregistrement : la barre rouge avec chrono, pause, annuler et envoyer apparaît.
+$("micro").addEventListener("click", async () => {
+  if (!courant || enregistre) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+    notice("Enregistrement vocal non pris en charge. Ouvre le site dans Chrome.");
+    return;
+  }
+  try {
+    flux = await navigator.mediaDevices.getUserMedia({ audio: true });
+    morceaux = [];
+    annule = false;
+    const type = ["audio/webm;codecs=opus", "audio/mp4"].find(t => MediaRecorder.isTypeSupported(t)) || "";
+    rec = new MediaRecorder(flux, type ? { mimeType: type } : undefined);
+    rec.ondataavailable = e => { if (e.data && e.data.size) morceaux.push(e.data); };
+    rec.onstop = async () => {
+      const duree = dureeRec();
+      const garder = !annule;
+      finEnregistrementUI();
+      arreterFlux();
+      if (!garder) { morceaux = []; return; }
+      if (duree < 1000 || !morceaux.length) { notice("Vocal trop court. Maintiens l'enregistrement plus longtemps."); return; }
+      const blob = new Blob(morceaux, { type: rec.mimeType || "audio/webm" });
+      if (blob.size > 8 * 1024 * 1024) { notice("Le vocal dépasse 8 Mo."); return; }
+      await envoyerVocal(blob);
+    };
+    rec.start();
+    enregistre = true;
+    enPause = false;
+    dureeAvant = 0;
+    debutRec = Date.now();
+    majChrono();
+    chrono = setInterval(majChrono, 250);
+    $("zoneSaisie").classList.add("enregistrement");
+  } catch (e) {
+    arreterFlux();
+    notice("Microphone inaccessible : " + e.message);
+  }
+});
+
+// Pause / reprise
+$("recPause").addEventListener("click", () => {
+  if (!rec || !enregistre) return;
+  if (!enPause) {
+    rec.pause();
+    dureeAvant += Date.now() - debutRec;
+    enPause = true;
+    $("point").classList.add("pause");
+    $("recPause").textContent = "▶";
+    $("etatRec").textContent = "En pause";
+  } else {
+    rec.resume();
+    debutRec = Date.now();
+    enPause = false;
+    $("point").classList.remove("pause");
+    $("recPause").textContent = "⏸";
+    $("etatRec").textContent = "Enregistrement...";
+  }
+  majChrono();
+});
+
+// Annuler (corbeille) et envoyer (flèche)
+$("recAnnuler").addEventListener("click", () => {
+  if (!rec || rec.state === "inactive") return;
+  annule = true;
+  rec.stop();
+});
+$("recEnvoyer").addEventListener("click", () => {
+  if (!rec || rec.state === "inactive") return;
+  annule = false;
+  rec.stop();
+});
+
+/* ---------- Nouvelle conversation ---------- */
+function ouvrirFeuille() {
+  $("fond").classList.add("on");
+  $("feuilleNouveau").classList.add("on");
+  $("recherche").value = "";
+  $("resultats").replaceChildren(el("div", "vide", "Tape au moins 2 lettres."));
+  setTimeout(() => $("recherche").focus(), 300);
+}
+function fermerFeuille() {
+  $("fond").classList.remove("on");
+  $("feuilleNouveau").classList.remove("on");
+}
+$("nouveau").addEventListener("click", ouvrirFeuille);
+$("fermer").addEventListener("click", fermerFeuille);
+$("fond").addEventListener("click", fermerFeuille);
+
+let attente = null;
+$("recherche").addEventListener("input", () => {
+  clearTimeout(attente);
+  attente = setTimeout(async () => {
+    const q = $("recherche").value.trim().replace(/^@/, "").replace(/[%,()]/g, "");
+    const res = $("resultats");
+    if (q.length < 2) { res.replaceChildren(el("div", "vide", "Tape au moins 2 lettres.")); return; }
+    const { data, error } = await db.from("profils")
+      .select("id,nom_utilisateur,photo_profil")
+      .ilike("nom_utilisateur", "%" + q + "%")
+      .neq("id", moi.id)
+      .limit(15);
+    if (error) { res.replaceChildren(el("div", "vide", "Recherche impossible : " + error.message)); return; }
+    res.replaceChildren();
+    if (!data || !data.length) { res.appendChild(el("div", "vide", "Aucun utilisateur trouvé.")); return; }
+    data.forEach(p => {
+      profils[p.id] = p;
+      const b = el("button", "conv");
+      b.type = "button";
+      const av = el("div", "av");
+      remplirAvatar(av, p.id);
+      const c = el("div", "c");
+      c.appendChild(el("b", "", nomDe(p.id)));
+      b.append(av, c);
+      b.addEventListener("click", () => ouvrirChat(p.id));
+      res.appendChild(b);
+    });
+  }, 280);
+});
+
+/* ---------- Temps réel ---------- */
+function activerTempsReel() {
+  if (canal) db.removeChannel(canal);
+  canal = db.channel("messages-" + moi.id)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "messages", filter: "destinataire_id=eq." + moi.id },
+      async ev => {
+        const m = ev.new;
+        await chargerProfils([m.expediteur_id]);
+        derniers[m.expediteur_id] = m;
+        if (m.expediteur_id === courant) {
+          const fil = $("fil");
+          if (fil.querySelector(".vide")) fil.replaceChildren();
+          ajouterBulle(m, etatFil);
+          fil.scrollTop = fil.scrollHeight;
+          marquerLus(courant);
+        } else {
+          nonLus[m.expediteur_id] = (nonLus[m.expediteur_id] || 0) + 1;
+          majBadge();
+          if (!courant) dessinerListe();
+        }
+      })
+    .subscribe();
+}
+
+// Sécurité : rafraîchissement régulier si le temps réel n'est pas activé sur la table.
+setInterval(() => {
+  if (document.hidden || !moi || enregistre || !navigator.onLine) return;
+  if (courant) chargerChat(); else chargerConversations();
+}, 12000);
+
+// Dès que la connexion revient, on recharge.
+window.addEventListener("online", () => {
+  if (!moi) return;
+  if (courant) chargerChat(); else { chargerConversations(); chargerStatuts(); }
+});
+
+/* ---------- Statuts (24 h) ---------- */
+const COULEURS = [
+  "linear-gradient(135deg,#1a0b3d,#06222f 55%,#34082a)",
+  "linear-gradient(135deg,#22e6ff,#8b5cf6)",
+  "linear-gradient(135deg,#8b5cf6,#ff2e93)",
+  "linear-gradient(135deg,#ff2e93,#ff9f43)",
+  "linear-gradient(135deg,#0f9b8e,#22e6ff)",
+  "linear-gradient(135deg,#111827,#374151)"
+];
+const DUREE_IMAGE = 6000;
+let statuts = [];
+let vus = new Set();
+let vis = { liste: [], i: 0, uid: null, ordre: [], minuterie: null, vues: [] };
+let fichierStatut = null, couleurStatut = 0, urlApercuStatut = null;
+
+function ilYa(d) {
+  const sec = Math.floor((Date.now() - new Date(d).getTime()) / 1000);
+  if (sec < 60) return "à l'instant";
+  if (sec < 3600) return "il y a " + Math.floor(sec / 60) + " min";
+  return "il y a " + Math.floor(sec / 3600) + " h";
+}
+
+async function chargerStatuts() {
+  if (!moi || !navigator.onLine) return;
+  const { data, error } = await db.from("statuts")
+    .select("id,user_id,type,contenu,media_url,couleur,created_at,expire_at")
+    .gt("expire_at", new Date().toISOString())
+    .order("created_at", { ascending: true }).limit(200);
+  if (error) { console.warn("Statuts :", error.message); dessinerStatuts(); return; }
+
+  let interdits = new Set();
+  try {
+    const bl = await db.from("blocages").select("bloque_id").eq("bloqueur_id", moi.id);
+    if (!bl.error) interdits = new Set((bl.data || []).map(x => x.bloque_id));
+  } catch (e) { /* ignoré */ }
+  statuts = (data || []).filter(st => !interdits.has(st.user_id));
+
+  vus = new Set();
+  const ids = statuts.map(st => st.id);
+  if (ids.length) {
+    const v = await db.from("statut_vues").select("statut_id").eq("spectateur_id", moi.id).in("statut_id", ids);
+    if (!v.error) vus = new Set((v.data || []).map(x => x.statut_id));
+  }
+  await chargerProfils([...new Set(statuts.map(st => st.user_id).concat(moi.id))]);
+  dessinerStatuts();
+}
+
+function creerPastille(uid, libelle, aDesStatuts, nonvu, estMoi) {
+  const b = el("button", "st");
+  b.type = "button";
+  const an = el("div", "anneau" + (aDesStatuts ? (nonvu ? " nonvu" : " vu") : ""));
+  const av = el("div", "av");
+  remplirAvatar(av, uid);
+  an.appendChild(av);
+  if (estMoi) {
+    const p = el("span", "plus-st", "+");
+    p.addEventListener("click", e => { e.stopPropagation(); ouvrirCreation(); });
+    an.appendChild(p);
+  }
+  b.append(an, el("span", "nom", libelle));
+  b.addEventListener("click", () => {
+    if (aDesStatuts) ouvrirStatuts(uid);
+    else if (estMoi) ouvrirCreation();
+  });
+  return b;
+}
+
+function dessinerStatuts() {
+  if (!moi) return;
+  const barre = $("barreStatuts");
+  barre.replaceChildren();
+  const parUtilisateur = {};
+  statuts.forEach(st => { (parUtilisateur[st.user_id] = parUtilisateur[st.user_id] || []).push(st); });
+
+  const miens = parUtilisateur[moi.id] || [];
+  barre.appendChild(creerPastille(moi.id, "Mon statut", miens.length > 0, miens.some(st => !vus.has(st.id)) && false, true));
+
+  const autres = Object.keys(parUtilisateur).filter(u => u !== moi.id).map(u => {
+    const l = parUtilisateur[u];
+    return { u, nonvu: l.some(st => !vus.has(st.id)), dernier: l[l.length - 1].created_at };
+  }).sort((a, b) => (Number(b.nonvu) - Number(a.nonvu)) || (new Date(b.dernier) - new Date(a.dernier)));
+
+  autres.forEach(a => barre.appendChild(creerPastille(a.u, nomDe(a.u).replace(/^@/, ""), true, a.nonvu, false)));
+  vis.ordre = (miens.length ? [moi.id] : []).concat(autres.map(a => a.u));
+}
+
+/* --- Lecture des statuts --- */
+function ouvrirStatuts(uid) {
+  const liste = statuts.filter(st => st.user_id === uid);
+  if (!liste.length) return;
+  vis.liste = liste;
+  vis.uid = uid;
+  const premier = liste.findIndex(st => !vus.has(st.id));
+  vis.i = premier === -1 ? 0 : premier;
+  $("visionneuse").classList.add("on");
+  afficherStatut();
+}
+
+function arreterLecture() {
+  clearTimeout(vis.minuterie);
+  const v = $("vcorps").querySelector("video");
+  if (v) v.pause();
+}
+
+function marquerVu(st) {
+  if (st.user_id === moi.id || vus.has(st.id)) return;
+  vus.add(st.id);
+  db.from("statut_vues").insert({ statut_id: st.id, spectateur_id: moi.id }).then(r => {
+    if (r.error && r.error.code !== "23505") console.warn("Vue :", r.error.message);
+  });
+}
+
+function afficherStatut() {
+  arreterLecture();
+  const st = vis.liste[vis.i];
+  if (!st) { fermerStatuts(); return; }
+  $("pvues").style.display = "none";
+
+  const barres = $("vbarres");
+  barres.replaceChildren();
+  vis.liste.forEach((_, k) => {
+    const seg = el("i", k < vis.i ? "fait" : "");
+    seg.appendChild(document.createElement("b"));
+    barres.appendChild(seg);
+  });
+  const prog = barres.children[vis.i].firstChild;
+
+  remplirAvatar($("vAv"), st.user_id);
+  $("vNomTexte").textContent = st.user_id === moi.id ? "Mon statut" : nomDe(st.user_id);
+  $("vTemps").textContent = ilYa(st.created_at);
+
+  const corps = $("vcorps");
+  corps.replaceChildren();
+  corps.style.background = "#000";
+
+  if (st.type === "video" && st.media_url) {
+    const v = document.createElement("video");
+    v.src = st.media_url; v.playsInline = true; v.autoplay = true;
+    v.addEventListener("timeupdate", () => { if (v.duration) prog.style.width = (v.currentTime / v.duration * 100) + "%"; });
+    v.addEventListener("ended", suivantStatut);
+    v.addEventListener("error", () => { vis.minuterie = setTimeout(suivantStatut, 1500); });
+    corps.appendChild(v);
+    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+  } else {
+    if (st.type === "image" && st.media_url) {
+      const img = document.createElement("img");
+      img.src = st.media_url; img.alt = "Statut";
+      corps.appendChild(img);
+    } else {
+      const t = el("div", "vtexte", st.contenu || "");
+      t.style.background = COULEURS[Number(st.couleur)] || COULEURS[0];
+      corps.appendChild(t);
+    }
+    prog.style.transition = "none";
+    prog.style.width = "0";
+    void prog.offsetWidth;
+    prog.style.transition = "width " + DUREE_IMAGE + "ms linear";
+    prog.style.width = "100%";
+    vis.minuterie = setTimeout(suivantStatut, DUREE_IMAGE);
+  }
+  if (st.type !== "texte" && st.contenu) corps.appendChild(el("div", "vlegende", st.contenu));
+
+  marquerVu(st);
+  const mien = st.user_id === moi.id;
+  $("vmien").style.display = mien ? "flex" : "none";
+  if (mien) chargerNbVues(st);
+}
+
+function suivantStatut() {
+  if (vis.i < vis.liste.length - 1) { vis.i++; afficherStatut(); return; }
+  const k = vis.ordre.indexOf(vis.uid);
+  const suivant = k >= 0 ? vis.ordre[k + 1] : null;
+  if (suivant) ouvrirStatuts(suivant); else fermerStatuts();
+}
+function precedentStatut() {
+  if (vis.i > 0) vis.i--;
+  afficherStatut();
+}
+function fermerStatuts() {
+  arreterLecture();
+  $("vcorps").replaceChildren();
+  $("pvues").style.display = "none";
+  $("visionneuse").classList.remove("on");
+  dessinerStatuts();
+}
+$("vg").addEventListener("click", precedentStatut);
+$("vd").addEventListener("click", suivantStatut);
+$("vFermer").addEventListener("click", fermerStatuts);
+
+/* --- Qui a vu mon statut --- */
+async function chargerNbVues(st) {
+  $("vNb").textContent = "👁 …";
+  vis.vues = [];
+  const { data, error } = await db.from("statut_vues").select("spectateur_id,created_at")
+    .eq("statut_id", st.id).order("created_at", { ascending: false });
+  if (st !== vis.liste[vis.i]) return;
+  if (!error) vis.vues = data || [];
+  $("vNb").textContent = "👁 " + vis.vues.length;
+}
+$("vNb").addEventListener("click", async () => {
+  arreterLecture();
+  const z = $("listeVues");
+  z.replaceChildren();
+  await chargerProfils(vis.vues.map(v => v.spectateur_id));
+  if (!vis.vues.length) z.appendChild(el("div", "vide", "Personne n'a encore vu ce statut."));
+  vis.vues.forEach(v => {
+    const ligne = el("div", "conv");
+    const av = el("div", "av");
+    remplirAvatar(av, v.spectateur_id);
+    const c = el("div", "c");
+    c.append(el("b", "", nomDe(v.spectateur_id)), el("p", "", ilYa(v.created_at)));
+    ligne.append(av, c);
+    z.appendChild(ligne);
+  });
+  $("pvues").style.display = "block";
+});
+$("pvuesFermer").addEventListener("click", () => { $("pvues").style.display = "none"; afficherStatut(); });
+
+/* --- Supprimer mon statut --- */
+$("vSup").addEventListener("click", async () => {
+  const st = vis.liste[vis.i];
+  if (!st || st.user_id !== moi.id) return;
+  if (!confirm("Supprimer ce statut ?")) return;
+  const { data, error } = await db.from("statuts").delete().eq("id", st.id).eq("user_id", moi.id).select("id");
+  if (error || !data || !data.length) { notice("Suppression impossible : " + (error ? error.message : "règle de suppression manquante.")); return; }
+  const morceau = (st.media_url || "").split("/object/public/statuts/")[1];
+  if (morceau) db.storage.from("statuts").remove([decodeURIComponent(morceau)]).then(() => {}, () => {});
+  statuts = statuts.filter(x => x.id !== st.id);
+  vis.liste.splice(vis.i, 1);
+  notice("Statut supprimé.", "succes");
+  if (!vis.liste.length) { fermerStatuts(); return; }
+  if (vis.i >= vis.liste.length) vis.i = vis.liste.length - 1;
+  afficherStatut();
+});
+
+/* --- Créer un statut --- */
+function majApercuStatut() {
+  const z = $("apercuStatut");
+  z.replaceChildren();
+  z.style.background = "#0b0e18";
+  if (urlApercuStatut) { URL.revokeObjectURL(urlApercuStatut); urlApercuStatut = null; }
+  if (fichierStatut) {
+    urlApercuStatut = URL.createObjectURL(fichierStatut);
+    const m = document.createElement(fichierStatut.type.startsWith("video/") ? "video" : "img");
+    m.src = urlApercuStatut;
+    if (m.tagName === "VIDEO") { m.muted = true; m.playsInline = true; m.controls = true; }
+    const x = el("button", "retirer", "✕");
+    x.type = "button";
+    x.setAttribute("aria-label", "Retirer le fichier");
+    x.addEventListener("click", () => { fichierStatut = null; $("fichierStatut").value = ""; majApercuStatut(); });
+    z.append(m, x);
+  } else {
+    z.style.background = COULEURS[couleurStatut];
+    z.textContent = $("texteStatut").value || "Ton statut";
+  }
+}
+
+function ouvrirCreation() {
+  fichierStatut = null;
+  $("fichierStatut").value = "";
+  $("texteStatut").value = "";
+  couleurStatut = 0;
+  const z = $("couleursStatut");
+  z.replaceChildren();
+  COULEURS.forEach((c, i) => {
+    const b = el("button", i === 0 ? "on" : "");
+    b.type = "button";
+    b.style.background = c;
+    b.setAttribute("aria-label", "Couleur " + (i + 1));
+    b.addEventListener("click", () => {
+      couleurStatut = i;
+      z.querySelectorAll("button").forEach((x, k) => x.classList.toggle("on", k === i));
+      majApercuStatut();
+    });
+    z.appendChild(b);
+  });
+  majApercuStatut();
+  $("fond").classList.add("on");
+  $("feuilleStatut").classList.add("on");
+}
+function fermerStatut() {
+  $("fond").classList.remove("on");
+  $("feuilleStatut").classList.remove("on");
+}
+$("fermerStatut").addEventListener("click", fermerStatut);
+$("fond").addEventListener("click", fermerStatut);
+$("texteStatut").addEventListener("input", () => { if (!fichierStatut) majApercuStatut(); });
+
+$("fichierStatut").addEventListener("change", function () {
+  const f = this.files && this.files[0];
+  if (!f) return;
+  const estVideo = f.type.startsWith("video/");
+  if (!estVideo && !f.type.startsWith("image/")) { this.value = ""; notice("Choisis une image ou une vidéo."); return; }
+  if (f.size > (estVideo ? 40 : 10) * 1024 * 1024) {
+    this.value = "";
+    notice(estVideo ? "La vidéo dépasse 40 Mo." : "La photo dépasse 10 Mo.");
+    return;
+  }
+  if (estVideo) {
+    const test = document.createElement("video");
+    const u = URL.createObjectURL(f);
+    test.preload = "metadata";
+    test.onloadedmetadata = () => {
+      URL.revokeObjectURL(u);
+      if (test.duration > 60) { $("fichierStatut").value = ""; notice("Un statut vidéo dure 60 secondes au maximum."); return; }
+      fichierStatut = f; majApercuStatut();
+    };
+    test.onerror = () => { URL.revokeObjectURL(u); fichierStatut = f; majApercuStatut(); };
+    test.src = u;
+  } else {
+    fichierStatut = f;
+    majApercuStatut();
+  }
+});
+
+$("publierStatut").addEventListener("click", async () => {
+  const texte = $("texteStatut").value.trim();
+  if (!texte && !fichierStatut) { notice("Écris un texte ou choisis une photo ou une vidéo."); return; }
+  const bouton = $("publierStatut");
+  bouton.disabled = true;
+  bouton.textContent = "Publication...";
+  try {
+    let url = null, type = "texte";
+    if (fichierStatut) {
+      type = fichierStatut.type.startsWith("video/") ? "video" : "image";
+      const ext = fichierStatut.name.includes(".") ? fichierStatut.name.split(".").pop().toLowerCase() : (type === "video" ? "mp4" : "jpg");
+      const chemin = moi.id + "/" + Date.now() + "_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)) + "." + ext;
+      const { error: eu } = await db.storage.from("statuts").upload(chemin, fichierStatut, {
+        contentType: fichierStatut.type, cacheControl: "3600", upsert: false
+      });
+      if (eu) throw new Error("Envoi du média impossible : " + eu.message + " (vérifie le bucket statuts).");
+      url = db.storage.from("statuts").getPublicUrl(chemin).data.publicUrl;
+    }
+    const { error } = await db.from("statuts").insert({
+      user_id: moi.id, type, contenu: texte || null, media_url: url, couleur: String(couleurStatut)
+    });
+    if (error) throw new Error(error.message);
+    fermerStatut();
+    notice("Statut publié. Il disparaîtra dans 24 h.", "succes");
+    await chargerStatuts();
+  } catch (e) {
+    notice(CacheSelemani.horsLigne(e) ? "Tu es hors ligne : statut non publié." : e.message);
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = "Publier";
+  }
+});
+
+// Mise à jour régulière de la barre des statuts
+setInterval(() => {
+  if (!document.hidden && moi && !courant && navigator.onLine && !$("visionneuse").classList.contains("on")) chargerStatuts();
+}, 60000);
+
+/* ---------- Démarrage ---------- */
+(async function demarrer() {
+  let session = null, erreur = null;
+  try {
+    const r = await db.auth.getSession();
+    session = r.data && r.data.session;
+    erreur = r.error;
+  } catch (e) { erreur = e; }
+  // Hors ligne : on utilise la session enregistrée pour afficher le contenu sauvegardé.
+  if (erreur && CacheSelemani.horsLigne(erreur)) {
+    const local = CacheSelemani.utilisateurLocal();
+    if (local) moi = local;
+  }
+  if (!moi) {
+    if (erreur) { $("liste").replaceChildren(el("div", "vide", "Erreur de session : " + erreur.message)); return; }
+    moi = session ? session.user : null;
+    if (!moi) { location.replace("connexion.html"); return; }
+  }
+  CacheSelemani.init(moi.id);
+
+  majBoutons();
+  await chargerConversations();
+  activerTempsReel();
+  chargerStatuts();
+
+  const idUrl = new URLSearchParams(location.search).get("id");
+  if (idUrl && UUID.test(idUrl) && idUrl !== moi.id) ouvrirChat(idUrl);
+})();
+</script>
+</body>
+</html>

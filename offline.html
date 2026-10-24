@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>Hors ligne | SELEMANI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100dvh;display:grid;place-items:center;padding:24px;text-align:center;color:#f5f7ff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(700px 500px at 8% 8%,rgba(139,92,246,.25),transparent),radial-gradient(700px 500px at 95% 90%,rgba(34,230,255,.16),transparent),#04050a}
+.logo{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border-radius:23px;font-size:42px;font-weight:900;color:#fff;background:linear-gradient(135deg,#22e6ff,#8b5cf6,#ff2e93);box-shadow:0 0 40px rgba(34,230,255,.35)}
+h1{font-size:24px;font-weight:900;margin-bottom:10px}
+p{max-width:320px;margin:0 auto 24px;color:#a8b2cc;font-size:14.5px;line-height:1.7}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:13px 26px;margin:5px;border:0;border-radius:15px;font:inherit;font-size:15px;font-weight:800;color:#fff;text-decoration:none;cursor:pointer;background:linear-gradient(110deg,#22e6ff,#8b5cf6,#ff2e93)}
+.btn.sec{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo" aria-hidden="true">S</div>
+  <h1>Tu es hors ligne</h1>
+  <p>Cette page n'a pas encore été enregistrée sur ton appareil. Reconnecte-toi à Internet, puis réessaie.</p>
+  <button class="btn" type="button" onclick="location.reload()">Réessayer</button>
+  <a class="btn sec" href="accueil.html">Ouvrir l'accueil</a>
+</main>
+<script>
+window.addEventListener("online", function () { location.reload(); });
+</script>
+</body>
+</html>

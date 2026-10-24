@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04050a">
+<title>SELEMANI - Profil</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--fond:#04050a;--cy:#22e6ff;--mg:#ff2e93;--vi:#8b5cf6;--tx:#f5f7ff;--tx2:#a8b2cc;--bd:rgba(255,255,255,.12)}
+html,body{height:100%;background:var(--fond);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}
+body{display:flex;justify-content:center;background:radial-gradient(700px 500px at 10% 20%,rgba(139,92,246,.22),transparent),radial-gradient(700px 500px at 90% 80%,rgba(34,230,255,.16),transparent),var(--fond)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+button:disabled{opacity:.5;cursor:wait}
+.app{position:relative;width:100%;max-width:480px;height:100dvh;background:#05060c;box-shadow:0 0 80px rgba(34,230,255,.12),0 0 0 1px var(--bd);overflow:hidden}
+.page{height:100%;overflow-y:auto;padding-bottom:calc(90px + env(safe-area-inset-bottom));scrollbar-width:none}
+.page::-webkit-scrollbar{display:none}
+.barre{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:rgba(5,6,12,.85);backdrop-filter:blur(16px)}
+.logo{font-weight:900;font-size:18px;letter-spacing:2px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.deco{font-size:11px;border:1px solid var(--bd);padding:7px 11px;border-radius:99px;color:#ff8fb8}
+.banniere{height:130px;margin-top:-1px;background:linear-gradient(135deg,#1a0b3d,#06222f 55%,#34082a);background-size:220% 220%;animation:fl 12s ease infinite;position:relative}
+@keyframes fl{50%{background-position:100% 100%}}
+.banniere::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(34,230,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(34,230,255,.09) 1px,transparent 1px);background-size:30px 30px}
+.tete{margin-top:-52px;padding:0 18px;text-align:center;position:relative}
+.anneau{width:104px;height:104px;margin:0 auto;border-radius:50%;padding:4px;background:conic-gradient(var(--cy),var(--vi),var(--mg),var(--cy));animation:tourne 6s linear infinite;box-shadow:0 0 30px rgba(34,230,255,.5)}
+@keyframes tourne{to{filter:hue-rotate(360deg)}}
+.photo{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:#0b0e18;font-size:42px;font-weight:900;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.nom{margin-top:12px;font-size:21px;font-weight:900;overflow-wrap:anywhere}
+.pseudo{margin-top:2px;color:var(--cy);font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.bio{margin-top:6px;color:var(--tx2);font-size:13px;line-height:1.4;overflow-wrap:anywhere;padding:0 10px;white-space:pre-wrap}
+.stats{display:flex;justify-content:center;gap:8px;margin:18px 0}
+.st{flex:1;max-width:120px;padding:12px 4px;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:16px}
+.st b{display:block;font-size:20px;background:linear-gradient(90deg,var(--cy),var(--mg));-webkit-background-clip:text;background-clip:text;color:transparent}
+.st span{font-size:10px;color:var(--tx2)}
+.boutons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.btn{padding:12px 18px;border:0;border-radius:14px;font-weight:800;font-size:13px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--vi),var(--mg));box-shadow:0 0 24px rgba(139,92,246,.25)}
+.btn2{padding:12px 18px;border-radius:14px;background:#141a2b;border:1px solid var(--bd);font-size:13px;font-weight:700}
+.onglets{display:flex;margin-top:22px;border-bottom:1px solid var(--bd);position:sticky;top:calc(52px + env(safe-area-inset-top));z-index:9;background:#05060c}
+.onglet{flex:1;padding:14px 0;font-size:13px;font-weight:700;color:var(--tx2);border-bottom:3px solid transparent}
+.onglet.on{color:#fff;border-color:var(--cy);text-shadow:0 0 14px var(--cy)}
+.grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;padding:2px}
+.case{position:relative;aspect-ratio:3/4;overflow:hidden;background:#0b0e18;border:0;color:white;text-align:center}
+.case img,.case video{width:100%;height:100%;object-fit:cover;display:block}
+.case.txt{display:grid;place-items:center;padding:10px;background:linear-gradient(135deg,#1a0b3d,#06222f 55%,#34082a);font-size:12px;font-weight:700;line-height:1.3;overflow-wrap:anywhere;text-align:center}
+.case .m{position:absolute;left:6px;bottom:6px;font-size:11px;font-weight:700;text-shadow:0 1px 4px #000}
+.case .t{position:absolute;right:6px;top:6px;font-size:13px;text-shadow:0 1px 4px #000}
+.bloque{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.bloque .pp{width:42px;height:42px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#0b0e18;font-weight:900}
+.bloque .pp img{width:100%;height:100%;object-fit:cover}
+.bloque b{flex:1;font-size:14px;overflow-wrap:anywhere}
+.vide{grid-column:1/-1;text-align:center;color:var(--tx2);padding:50px 20px;line-height:1.7;font-size:14px;white-space:pre-line}
+.vide,.vide *{overflow-wrap:anywhere}
+.nav{position:absolute;z-index:30;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(4,5,10,.9);border-top:1px solid var(--bd);backdrop-filter:blur(18px)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:48px;color:var(--tx2);text-decoration:none;font-size:10px}
+.nav .i{font-size:21px}
+.nav .actif{color:#fff}
+.nav .plus .i{width:42px;height:32px;display:grid;place-items:center;border-radius:10px;font-size:24px;color:#fff;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 20px rgba(34,230,255,.5)}
+.fond{position:absolute;z-index:40;inset:0;background:#000a;opacity:0;pointer-events:none;transition:.25s}
+.fond.on{opacity:1;pointer-events:auto}
+.feuille{position:absolute;z-index:41;left:0;right:0;bottom:0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));background:#0b0e18;border:1px solid var(--bd);border-radius:24px 24px 0 0;transform:translateY(105%);transition:.3s;max-height:90vh;overflow-y:auto}
+.feuille.on{transform:none}
+.fe-t{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-weight:800}
+.fe-t button{font-size:20px;color:var(--tx2)}
+.champ{width:100%;background:#05070d;border:1px solid var(--bd);border-radius:14px;padding:13px;outline:none;font-size:14px;margin-bottom:12px}
+.champ:focus{border-color:var(--cy)}
+textarea.champ{resize:none;height:80px}
+.label-photo{display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;background:linear-gradient(120deg,rgba(34,230,255,.10),rgba(139,92,246,.13));border:1px dashed var(--cy);border-radius:14px;color:var(--cy);font-size:13px;font-weight:800;cursor:pointer;margin-bottom:12px;text-align:center;min-height:54px}
+.label-photo input{display:none}
+.apercu-photo{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:12px;background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:16px}
+.apercu-photo img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--cy);background:#101629;flex-shrink:0}
+.apercu-photo div{font-size:12px;color:var(--tx2);line-height:1.5;overflow-wrap:anywhere}
+.visio{position:absolute;z-index:60;inset:0;background:#000;display:none;flex-direction:column}
+.visio.on{display:flex}
+.visio .zone{flex:1;position:relative;display:grid;place-items:center;overflow:hidden;padding:10px}
+.visio .zone img,.visio .zone video{max-width:100%;max-height:100%;object-fit:contain}
+.visio .gros{padding:30px;font-size:24px;font-weight:800;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;text-shadow:0 0 24px rgba(34,230,255,.5)}
+.visio .haut{display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top)) 14px 10px}
+.visio .bas{padding:12px 16px calc(16px + env(safe-area-inset-bottom));font-size:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;max-height:30%;overflow:auto}
+.visio .haut button{font-size:22px;padding:4px 10px}
+.sup{font-size:12px;border:1px solid rgba(255,77,109,.5);color:#ff8197;padding:8px 12px;border-radius:99px}
+.message{display:none;position:absolute;z-index:70;left:14px;right:14px;top:calc(64px + env(safe-area-inset-top));padding:11px;border-radius:12px;font-size:13px;overflow-wrap:anywhere}
+.message.succes{display:block;background:rgba(34,197,94,.94);color:#fff}
+.message.erreur{display:block;background:rgba(255,46,100,.94);color:#fff}
+.message.info{display:block;background:rgba(34,230,255,.94);color:#001}
+@media(max-width:360px){.stats{gap:5px}.st span{font-size:9px}.st b{font-size:17px}.btn,.btn2{padding:11px 12px}}
+</style>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SELEMANI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<script src="cachelocal.js"></script>
+<script src="pwa.js" defer></script>
+</head>
+
+<body>
+<div class="app">
+<div id="message" class="message" role="status" aria-live="polite"></div>
+
+<div class="page" id="page">
+  <div class="barre">
+    <div class="logo">SELEMANI</div>
+    <button class="deco" id="boutonDeconnexion" type="button">Quitter ↗</button>
+  </div>
+
+  <div class="banniere"></div>
+
+  <section class="tete">
+    <div class="anneau">
+      <div class="photo" id="photo">S</div>
+    </div>
+
+    <div class="nom" id="nom">Chargement...</div>
+    <div class="pseudo" id="pseudo">@username</div>
+    <div class="bio" id="bio">Chargement du profil...</div>
+
+    <div class="stats">
+      <div class="st"><b id="nbSuivis">0</b><span>Abonnements</span></div>
+      <div class="st"><b id="nbAbonnes">0</b><span>Abonnés</span></div>
+      <div class="st"><b id="nbRecus">0</b><span>J'aime</span></div>
+      <div class="st"><b id="nbPubs">0</b><span>Posts</span></div>
+    </div>
+
+    <div class="boutons">
+      <button class="btn" id="boutonModifier" type="button">✎ Modifier le profil</button>
+      <button class="btn" id="boutonSuivre" type="button" hidden>Suivre</button>
+      <button class="btn2" id="boutonPartager" type="button">Partager ↗</button>
+      <button class="btn2" id="boutonBloques" type="button" hidden>🚫 Bloqués</button>
+    </div>
+  </section>
+
+  <div class="onglets">
+    <button class="onglet on" data-onglet="pubs" type="button">▦ Publications</button>
+    <button class="onglet" data-onglet="aimes" type="button">♥ Aimés</button>
+    <button class="onglet" data-onglet="favoris" type="button">🔖 Enregistrés</button>
+  </div>
+
+  <div class="grille" id="grille">
+    <div class="vide">Chargement...</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="accueil.html"><span class="i">⌂</span>Accueil</a>
+  <a href="messages.html"><span class="i">✉</span>Messages</a>
+  <a href="creer.html" class="plus"><span class="i">+</span><span>Créer</span></a>
+  <a href="notifications.html"><span class="i">🔔</span>Notifs</a>
+  <a href="profil.html" class="actif"><span class="i">♙</span>Profil</a>
+</nav>
+
+<div class="fond" id="fond"></div>
+
+<section class="feuille" id="feuille" aria-label="Modifier le profil">
+  <div class="fe-t">
+    Modifier le profil
+    <button type="button" id="fermer" aria-label="Fermer">✕</button>
+  </div>
+
+  <form id="formProfil">
+    <div class="apercu-photo">
+      <img id="apercuPhoto" alt="Aperçu de la photo de profil">
+      <div id="texteApercu">Ta photo actuelle.<br>Choisis une image pour la remplacer.</div>
+    </div>
+
+    <label class="label-photo" id="labelPhotoText">
+      📷　Choisir une photo de profil
+      <input type="file" id="champFichierPhoto" accept="image/jpeg,image/png,image/webp">
+    </label>
+
+    <input class="champ" id="champNom" maxlength="40" placeholder="Ton nom affiché" required>
+    <input class="champ" id="champPseudo" maxlength="30" placeholder="Ton nom d'utilisateur (ex: selemani)" autocomplete="username" required>
+    <textarea class="champ" id="champBio" maxlength="150" placeholder="Écris ta bio..."></textarea>
+
+    <button class="btn" id="boutonNom" type="submit" style="width:100%">Enregistrer</button>
+  </form>
+</section>
+
+<section class="feuille" id="feuilleBloques" aria-label="Utilisateurs bloqués">
+  <div class="fe-t">
+    Utilisateurs bloqués
+    <button type="button" id="fermerBloques" aria-label="Fermer">✕</button>
+  </div>
+  <div id="listeBloques"></div>
+</section>
+
+<div class="visio" id="visio">
+  <div class="haut">
+    <button id="fermerVisio" type="button" aria-label="Retour">←</button>
+    <button class="sup" id="supprimer" type="button" hidden>🗑 Supprimer</button>
+  </div>
+  <div class="zone" id="zoneVisio"></div>
+  <div class="bas" id="basVisio"></div>
+</div>
+</div>
+
+<script>
+"use strict";
+
+// Configuration Supabase (identifiants conservés)
+const SUPABASE_URL = "https://cgihcctpedkaessouozs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_osaXxcflmQjkyDXrQOJqPA_6xFkQI-Q";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+);
+
+let utilisateurActuel = null;
+let ongletActif = "pubs";
+let publicationOuverte = null;
+let profilId = null;
+let estMoi = true;
+let suit = false;
+let nomProfil = "";
+let pseudoProfil = "";
+let bioProfil = "";
+let avatarProfil = "";
+let profilEnBase = null;
+let minuterie = null;
+
+const $ = id => document.getElementById(id);
+const grille = $("grille");
+
+const AVATAR_DEFAUT = "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="#0b0e18"/><circle cx="100" cy="72" r="38" fill="#22e6ff"/><path d="M20 200c0-48 32-78 80-78s80 30 80 78" fill="#8b5cf6"/></svg>');
+
+function creerElement(tag, classe, texte = "") {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texte !== "") e.textContent = texte;
+  return e;
+}
+
+function afficherMessage(texte, type = "info") {
+  const e = $("message");
+  e.textContent = texte;
+  e.className = "message " + type;
+  clearTimeout(minuterie);
+  minuterie = setTimeout(() => e.className = "message", 3500);
+}
+
+/* CORRECTION : on n'accepte qu'un vrai lien http(s) comme photo.
+   Une image en base64 ("data:...") est ignorée : elle gonflait le jeton de connexion. */
+function lienPhotoValide(v) {
+  return typeof v === "string" && /^https?:\/\//i.test(v) ? v : "";
+}
+
+function nomDepuisUtilisateur() {
+  const m = utilisateurActuel?.user_metadata || {};
+  return m.nom_complet || m.full_name || m.name || m.nom ||
+    (utilisateurActuel?.email ? utilisateurActuel.email.split("@")[0] : "Utilisateur");
+}
+
+function pseudoDepuisUtilisateur() {
+  const m = utilisateurActuel?.user_metadata || {};
+  return m.nom_utilisateur || m.username || m.pseudo ||
+    (utilisateurActuel?.email
+      ? utilisateurActuel.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_.-]/g, "")
+      : "utilisateur");
+}
+
+function bioDepuisUtilisateur() {
+  const m = utilisateurActuel?.user_metadata || {};
+  return m.biographie ?? m.bio ?? "";
+}
+
+function avatarDepuisUtilisateur() {
+  const m = utilisateurActuel?.user_metadata || {};
+  return lienPhotoValide(m.photo_profil) || lienPhotoValide(m.avatar_url) || lienPhotoValide(m.photo_url) || "";
+}
+
+function initiale(n) {
+  return (String(n || "S").trim().charAt(0) || "S").toUpperCase();
+}
+
+function afficherPhoto(url, nom) {
+  const d = $("photo");
+  d.replaceChildren();
+
+  if (url) {
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = "Photo de " + nom;
+    img.onerror = () => { d.textContent = initiale(nom); };
+    d.appendChild(img);
+  } else {
+    d.textContent = initiale(nom);
+  }
+}
+
+function afficherIdentite() {
+  const nom = estMoi
+    ? (profilEnBase?.nom_complet || nomDepuisUtilisateur())
+    : (nomProfil || "Utilisateur");
+
+  const pseudo = estMoi
+    ? (profilEnBase?.nom_utilisateur || pseudoDepuisUtilisateur())
+    : (pseudoProfil || "utilisateur");
+
+  const bio = estMoi
+    ? (profilEnBase?.biographie ?? bioDepuisUtilisateur())
+    : bioProfil;
+
+  const avatar = estMoi
+    ? (lienPhotoValide(profilEnBase?.photo_profil) || avatarDepuisUtilisateur())
+    : avatarProfil;
+
+  $("nom").textContent = nom;
+  $("pseudo").textContent = "@" + String(pseudo || "utilisateur").replace(/^@/, "");
+  $("bio").textContent = bio || "Aucune biographie pour le moment...";
+  afficherPhoto(avatar, nom);
+}
+
+async function obtenirProfil(id) {
+  const { data, error } = await supabaseClient
+    .from("profils")
+    .select("id,nom_utilisateur,photo_profil,biographie,created_at,updated_at")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+async function chargerOuCreerMonProfil() {
+  let p = await obtenirProfil(utilisateurActuel.id);
+
+  if (!p) {
+    const m = utilisateurActuel.user_metadata || {};
+
+    const { error } = await supabaseClient.from("profils").upsert({
+      id: utilisateurActuel.id,
+      nom_utilisateur: m.nom_utilisateur || m.username || null,
+      photo_profil: lienPhotoValide(m.photo_profil) || lienPhotoValide(m.avatar_url) || null,
+      biographie: m.biographie || m.bio || "",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }, { onConflict: "id" });
+
+    if (error) throw error;
+    p = await obtenirProfil(utilisateurActuel.id);
+  }
+
+  profilEnBase = p || {};
+}
+
+async function chargerProfilVisiteur(id) {
+  const p = await obtenirProfil(id);
+
+  if (p) {
+    profilEnBase = p;
+    pseudoProfil = p.nom_utilisateur || "utilisateur";
+    bioProfil = p.biographie || "";
+    avatarProfil = lienPhotoValide(p.photo_profil);
+    nomProfil = p.nom_utilisateur || "Utilisateur";
+  } else {
+    const { data, error } = await supabaseClient
+      .from("publications")
+      .select("nom_auteur")
+      .eq("user_id", id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (error) console.warn(error.message);
+
+    nomProfil = data?.[0]?.nom_auteur || "Utilisateur";
+    pseudoProfil = "utilisateur";
+    bioProfil = "";
+    avatarProfil = "";
+  }
+}
+
+function ouvrirFeuille() {
+  if (!estMoi || !utilisateurActuel) return;
+
+  $("champNom").value = profilEnBase?.nom_complet || nomDepuisUtilisateur();
+  $("champPseudo").value = profilEnBase?.nom_utilisateur || pseudoDepuisUtilisateur();
+  $("champBio").value = profilEnBase?.biographie ?? bioDepuisUtilisateur();
+  $("champFichierPhoto").value = "";
+
+  $("labelPhotoText").childNodes[0].textContent = "📷　Choisir une photo de profil";
+
+  $("apercuPhoto").src =
+    lienPhotoValide(profilEnBase?.photo_profil) || avatarDepuisUtilisateur() || AVATAR_DEFAUT;
+
+  $("texteApercu").textContent =
+    "Ta photo actuelle. Choisis une image pour la remplacer.";
+
+  $("fond").classList.add("on");
+  $("feuille").classList.add("on");
+}
+
+function fermerFeuille() {
+  $("fond").classList.remove("on");
+  $("feuille").classList.remove("on");
+}
+
+// Aperçu et vérification de la photo avant son envoi.
+$("champFichierPhoto").addEventListener("change", function () {
+  const f = this.files?.[0];
+  if (!f) return;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
+    this.value = "";
+    afficherMessage("Choisis une image JPEG, PNG ou WEBP.", "erreur");
+    return;
+  }
+
+  if (f.size > 5 * 1024 * 1024) {
+    this.value = "";
+    afficherMessage("La photo ne doit pas dépasser 5 Mo.", "erreur");
+    return;
+  }
+
+  $("labelPhotoText").childNodes[0].textContent =
+    "✓　Image sélectionnée : " + f.name + " ";
+
+  $("apercuPhoto").src = URL.createObjectURL(f);
+
+  $("texteApercu").textContent =
+    "Aperçu de la nouvelle photo. Appuie sur Enregistrer pour confirmer.";
+});
+
+// Envoi de la photo dans le stockage Supabase.
+async function televerserPhoto(f) {
+  if (!f) return null;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
+    throw new Error("Choisis une image JPEG, PNG ou WEBP.");
+  }
+
+  if (f.size > 5 * 1024 * 1024) {
+    throw new Error("La photo ne doit pas dépasser 5 Mo.");
+  }
+
+  const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[f.type];
+  const path = utilisateurActuel.id + "/" + Date.now() + "." + ext;
+
+  const { error } = await supabaseClient.storage
+    .from("photos-profils")
+    .upload(path, f, { cacheControl: "3600", upsert: false, contentType: f.type });
+
+  if (error) {
+    throw new Error(
+      "Envoi de la photo impossible : " + error.message +
+      " (vérifie le bucket photos-profils et ses règles Storage)."
+    );
+  }
+
+  return supabaseClient.storage.from("photos-profils").getPublicUrl(path).data.publicUrl;
+}
+
+function validerPseudo(p) {
+  return /^[a-z0-9_.-]{3,30}$/.test(p);
+}
+
+// Enregistrement du profil et de la photo sélectionnée.
+$("formProfil").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  if (!utilisateurActuel || !estMoi) return;
+
+  const nom = $("champNom").value.trim();
+  const pseudo = $("champPseudo").value.trim().toLowerCase().replace(/\s+/g, "");
+  const bio = $("champBio").value.trim();
+  const f = $("champFichierPhoto").files?.[0];
+
+  if (!nom) {
+    return afficherMessage("Entre ton nom affiché.", "erreur");
+  }
+
+  if (!validerPseudo(pseudo)) {
+    return afficherMessage(
+      "Le pseudo doit contenir 3 à 30 caractères : lettres minuscules, chiffres, points, tirets ou underscores.",
+      "erreur"
+    );
+  }
+
+  const b = $("boutonNom");
+  b.disabled = true;
+  b.textContent = "Enregistrement...";
+
+  try {
+    // CORRECTION : on ne garde que de vrais liens (jamais d'image base64)
+    let photo = lienPhotoValide(profilEnBase?.photo_profil) || avatarDepuisUtilisateur() || null;
+
+    if (f) {
+      photo = await televerserPhoto(f);
+    }
+
+    // CORRECTION : seulement de petits textes dans les métadonnées (donc dans le jeton).
+    // La photo et la bio restent uniquement dans la table "profils".
+    const { error: authError } = await supabaseClient.auth.updateUser({
+      data: {
+        nom_complet: nom,
+        full_name: nom,
+        nom_utilisateur: pseudo,
+        username: pseudo
+      }
+    });
+
+    if (authError) throw authError;
+
+    const now = new Date().toISOString();
+
+    const { error } = await supabaseClient.from("profils").upsert({
+      id: utilisateurActuel.id,
+      nom_utilisateur: pseudo,
+      photo_profil: photo,
+      biographie: bio,
+      updated_at: now
+    }, { onConflict: "id" });
+
+    if (error) {
+      throw new Error("La table profils a refusé l'enregistrement : " + error.message);
+    }
+
+    const { data } = await supabaseClient.auth.getUser();
+    utilisateurActuel = data?.user || utilisateurActuel;
+
+    profilEnBase = {
+      ...(profilEnBase || {}),
+      id: utilisateurActuel.id,
+      nom_complet: nom,
+      nom_utilisateur: pseudo,
+      biographie: bio,
+      photo_profil: photo,
+      updated_at: now
+    };
+
+    afficherIdentite();
+    fermerFeuille();
+    afficherMessage("Profil mis à jour avec succès !", "succes");
+    await chargerStats();
+
+  } catch (err) {
+    console.error(err);
+    afficherMessage(err.message || "Modification impossible.", "erreur");
+
+  } finally {
+    b.disabled = false;
+    b.textContent = "Enregistrer";
+  }
+});
+
+// Compte les mentions J'aime des publications.
+async function compterLikes(ids) {
+  const nb = {};
+  ids.forEach(id => nb[id] = 0);
+
+  if (!ids.length) return nb;
+
+  const { data, error } = await supabaseClient
+    .from("likes")
+    .select("publication_id")
+    .in("publication_id", ids);
+
+  if (error) throw error;
+
+  (data || []).forEach(l => {
+    if (nb[l.publication_id] !== undefined) nb[l.publication_id]++;
+  });
+
+  return nb;
+}
+
+// Crée une vignette pour une publication.
+function creerCase(pub) {
+  const c = creerElement("button", "case");
+  c.type = "button";
+  c.setAttribute("aria-label", "Ouvrir la publication");
+
+  if (pub.media_url && pub.media_type === "video") {
+    const v = document.createElement("video");
+    v.src = pub.media_url + "#t=0.1";
+    v.muted = true;
+    v.playsInline = true;
+    v.preload = "metadata";
+    c.append(v, creerElement("span", "t", "▶"));
+
+  } else if (pub.media_url && pub.media_type === "audio") {
+    c.classList.add("txt");
+    c.appendChild(creerElement("span", "", "♫ Audio"));
+
+  } else if (pub.media_url) {
+    const i = document.createElement("img");
+    i.src = pub.media_url;
+    i.loading = "lazy";
+    i.alt = "Publication";
+
+    i.onerror = () => {
+      i.remove();
+      c.classList.add("txt");
+      c.appendChild(creerElement("span", "", (pub.contenu || "Publication").slice(0, 90)));
+    };
+
+    c.appendChild(i);
+
+  } else {
+    c.classList.add("txt");
+    c.appendChild(creerElement("span", "", (pub.contenu || "Publication").slice(0, 90)));
+  }
+
+  c.appendChild(creerElement("span", "m", "♥ " + (pub.nbLikes || 0)));
+  c.addEventListener("click", () => ouvrirVisionneuse(pub));
+
+  return c;
+}
+
+// Charge les publications ou les publications aimées.
+async function chargerOnglet() {
+  grille.replaceChildren(creerElement("div", "vide", "Chargement..."));
+
+  try {
+    let pubs = [];
+
+    if (ongletActif === "pubs") {
+      const { data, error } = await supabaseClient
+        .from("publications")
+        .select("id,user_id,nom_auteur,contenu,media_url,media_type,created_at")
+        .eq("user_id", profilId)
+        .order("created_at", { ascending: false })
+        .limit(60);
+
+      if (error) throw error;
+      pubs = data || [];
+
+    } else {
+      if (!utilisateurActuel) {
+        throw new Error("Connecte-toi pour consulter les publications aimées.");
+      }
+
+      const { data: lk, error } = await supabaseClient
+        .from(ongletActif === "favoris" ? "favoris" : "likes")
+        .select("publication_id")
+        .eq("user_id", utilisateurActuel.id)
+        .limit(60);
+
+      if (error) throw error;
+
+      const ids = (lk || []).map(l => l.publication_id);
+
+      if (ids.length) {
+        const { data, error: e2 } = await supabaseClient
+          .from("publications")
+          .select("id,user_id,nom_auteur,contenu,media_url,media_type,created_at")
+          .in("id", ids)
+          .order("created_at", { ascending: false });
+
+        if (e2) throw e2;
+        pubs = data || [];
+      }
+    }
+
+    const nb = await compterLikes(pubs.map(p => p.id));
+    pubs.forEach(p => p.nbLikes = nb[p.id] || 0);
+
+    grille.replaceChildren();
+
+    if (!pubs.length) {
+      const vide = creerElement(
+        "div",
+        "vide",
+        ongletActif === "pubs"
+          ? "Aucune publication pour le moment.\nAppuie sur + pour partager ton premier moment."
+          : ongletActif === "favoris"
+              ? "Aucune publication enregistrée.\nTouche le signet 🔖 sous une publication pour la retrouver ici."
+              : "Tu n'as encore rien aimé.\nLes publications que tu aimes apparaîtront ici."
+      );
+      vide.style.whiteSpace = "pre-line";
+      grille.appendChild(vide);
+      return;
+    }
+
+    pubs.forEach(p => grille.appendChild(creerCase(p)));
+
+  } catch (e) {
+    console.error(e);
+    grille.replaceChildren(creerElement("div", "vide", "Impossible de charger : " + e.message));
+  }
+}
+
+document.querySelectorAll(".onglet").forEach(b => {
+  b.addEventListener("click", () => {
+    if ((b.dataset.onglet === "aimes" || b.dataset.onglet === "favoris") && !estMoi) return;
+
+    document.querySelectorAll(".onglet").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+
+    ongletActif = b.dataset.onglet;
+    chargerOnglet();
+  });
+});
+
+// Charge les statistiques du profil.
+async function chargerStats() {
+  try {
+    const { data: ps, error: pe } = await supabaseClient
+      .from("publications")
+      .select("id")
+      .eq("user_id", profilId);
+
+    if (pe) throw pe;
+
+    const ids = (ps || []).map(p => p.id);
+    $("nbPubs").textContent = ids.length;
+
+    const nb = await compterLikes(ids);
+    $("nbRecus").textContent = Object.values(nb).reduce((a, b) => a + b, 0);
+
+    const [suivis, abonnes] = await Promise.all([
+      supabaseClient.from("abonnements")
+        .select("suivi_id", { count: "exact", head: true })
+        .eq("abonne_id", profilId),
+
+      supabaseClient.from("abonnements")
+        .select("abonne_id", { count: "exact", head: true })
+        .eq("suivi_id", profilId)
+    ]);
+
+    if (suivis.error) throw suivis.error;
+    if (abonnes.error) throw abonnes.error;
+
+    $("nbSuivis").textContent = suivis.count || 0;
+    $("nbAbonnes").textContent = abonnes.count || 0;
+
+  } catch (e) {
+    console.error("Erreur statistiques :", e);
+  }
+}
+
+function majBoutonSuivre() {
+  $("boutonSuivre").textContent = suit ? "Abonné ✓" : "+ Suivre";
+  $("boutonSuivre").className = suit ? "btn2" : "btn";
+}
+
+// Vérifie si l'utilisateur suit déjà ce profil.
+async function initialiserAbonnement() {
+  if (estMoi || !utilisateurActuel) return;
+
+  const { data, error } = await supabaseClient
+    .from("abonnements")
+    .select("abonne_id")
+    .eq("abonne_id", utilisateurActuel.id)
+    .eq("suivi_id", profilId)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  suit = Boolean(data);
+  majBoutonSuivre();
+}
+
+// S'abonner ou se désabonner.
+$("boutonSuivre").addEventListener("click", async function () {
+  if (!utilisateurActuel || estMoi) return;
+
+  this.disabled = true;
+
+  try {
+    const { error } = suit
+      ? await supabaseClient.from("abonnements")
+          .delete()
+          .eq("abonne_id", utilisateurActuel.id)
+          .eq("suivi_id", profilId)
+      : await supabaseClient.from("abonnements")
+          .insert({ abonne_id: utilisateurActuel.id, suivi_id: profilId });
+
+    if (error && error.code !== "23505") throw error;
+
+    suit = !suit;
+    majBoutonSuivre();
+
+    await chargerStats();
+
+    afficherMessage(
+      suit ? "Tu suis maintenant ce profil." : "Tu ne suis plus ce profil.",
+      "succes"
+    );
+
+  } catch (e) {
+    afficherMessage("Abonnement impossible : " + e.message, "erreur");
+
+  } finally {
+    this.disabled = false;
+  }
+});
+
+// Ouvre une publication en plein écran.
+function ouvrirVisionneuse(pub) {
+  publicationOuverte = pub;
+
+  const z = $("zoneVisio");
+  z.replaceChildren();
+
+  if (pub.media_url && pub.media_type === "video") {
+    const m = document.createElement("video");
+    m.src = pub.media_url;
+    m.controls = true;
+    m.loop = true;
+    m.autoplay = true;
+    m.playsInline = true;
+    z.appendChild(m);
+    $("basVisio").textContent = pub.contenu || "";
+
+  } else if (pub.media_url && pub.media_type === "audio") {
+    const a = document.createElement("audio");
+    a.src = pub.media_url;
+    a.controls = true;
+    z.appendChild(a);
+    $("basVisio").textContent = pub.contenu || "Publication audio";
+
+  } else if (pub.media_url) {
+    const m = document.createElement("img");
+    m.src = pub.media_url;
+    m.alt = "Publication";
+    z.appendChild(m);
+    $("basVisio").textContent = pub.contenu || "";
+
+  } else {
+    z.appendChild(creerElement("div", "gros", pub.contenu || "Publication sans texte."));
+    $("basVisio").textContent = "";
+  }
+
+  $("supprimer").hidden = !(utilisateurActuel && pub.user_id === utilisateurActuel.id);
+  $("visio").classList.add("on");
+}
+
+function fermerVisionneuse() {
+  $("visio").classList.remove("on");
+  $("zoneVisio").replaceChildren();
+  $("basVisio").textContent = "";
+  publicationOuverte = null;
+}
+
+$("fermerVisio").addEventListener("click", fermerVisionneuse);
+
+// Supprime une publication appartenant à l'utilisateur connecté.
+$("supprimer").addEventListener("click", async function () {
+  if (
+    !publicationOuverte ||
+    !utilisateurActuel ||
+    publicationOuverte.user_id !== utilisateurActuel.id
+  ) return;
+
+  if (!confirm("Supprimer définitivement cette publication ?")) return;
+
+  this.disabled = true;
+
+  try {
+    const { error } = await supabaseClient
+      .from("publications")
+      .delete()
+      .eq("id", publicationOuverte.id)
+      .eq("user_id", utilisateurActuel.id);
+
+    if (error) throw error;
+
+    fermerVisionneuse();
+    afficherMessage("Publication supprimée.", "succes");
+
+    await chargerOnglet();
+    await chargerStats();
+
+  } catch (e) {
+    afficherMessage("Suppression impossible : " + e.message, "erreur");
+
+  } finally {
+    this.disabled = false;
+  }
+});
+
+$("boutonModifier").addEventListener("click", ouvrirFeuille);
+$("fermer").addEventListener("click", fermerFeuille);
+$("fond").addEventListener("click", fermerFeuille);
+
+// Partage le lien du profil.
+$("boutonPartager").addEventListener("click", async () => {
+  if (!profilId) {
+    return afficherMessage("Le profil n'est pas encore chargé.", "erreur");
+  }
+
+  const url = new URL("profil.html", location.href);
+  url.searchParams.set("id", profilId);
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "SELEMANI",
+        text: "Découvre mon profil sur SELEMANI !",
+        url: url.href
+      });
+
+    } else if (navigator.clipboard && isSecureContext) {
+      await navigator.clipboard.writeText(url.href);
+      afficherMessage("Lien du profil copié.", "succes");
+
+    } else {
+      prompt("Copie ce lien :", url.href);
+    }
+
+  } catch (e) {
+    if (e.name !== "AbortError") {
+      afficherMessage("Partage impossible.", "erreur");
+    }
+  }
+});
+
+// Liste des utilisateurs bloqués, avec le bouton pour les débloquer.
+function fermerBloques() {
+  $("feuilleBloques").classList.remove("on");
+  $("fond").classList.remove("on");
+}
+$("fermerBloques").addEventListener("click", fermerBloques);
+$("fond").addEventListener("click", fermerBloques);
+
+$("boutonBloques").addEventListener("click", async () => {
+  if (!utilisateurActuel) return;
+  $("fond").classList.add("on");
+  $("feuilleBloques").classList.add("on");
+  const z = $("listeBloques");
+  z.replaceChildren(creerElement("div", "vide", "Chargement..."));
+  try {
+    const { data: bl, error } = await supabaseClient.from("blocages")
+      .select("bloque_id").eq("bloqueur_id", utilisateurActuel.id);
+    if (error) throw error;
+    const ids = (bl || []).map(x => x.bloque_id);
+    if (!ids.length) {
+      const v = creerElement("div", "vide", "Tu n'as bloqué personne.");
+      v.style.padding = "30px 10px";
+      z.replaceChildren(v);
+      return;
+    }
+    const { data: pr } = await supabaseClient.from("profils").select("id,nom_utilisateur,photo_profil").in("id", ids);
+    const noms = {};
+    (pr || []).forEach(p => { noms[p.id] = p; });
+    z.replaceChildren();
+    ids.forEach(id => {
+      const p = noms[id] || {};
+      const nom = p.nom_utilisateur ? "@" + p.nom_utilisateur : "Utilisateur " + id.slice(0, 8);
+      const ligne = creerElement("div", "bloque");
+      const pp = creerElement("div", "pp");
+      if (/^https?:\/\//i.test(p.photo_profil || "")) {
+        const img = document.createElement("img");
+        img.src = p.photo_profil; img.alt = "";
+        pp.appendChild(img);
+      } else {
+        pp.textContent = (nom.replace("@", "").charAt(0) || "U").toUpperCase();
+      }
+      const bt = creerElement("button", "btn2", "Débloquer");
+      bt.type = "button";
+      bt.addEventListener("click", async () => {
+        bt.disabled = true;
+        const { error: e2 } = await supabaseClient.from("blocages").delete()
+          .eq("bloqueur_id", utilisateurActuel.id).eq("bloque_id", id);
+        if (e2) { bt.disabled = false; afficherMessage("Déblocage impossible : " + e2.message, "erreur"); return; }
+        ligne.remove();
+        afficherMessage("Utilisateur débloqué.", "succes");
+        if (!z.children.length) z.appendChild(creerElement("div", "vide", "Tu n'as bloqué personne."));
+      });
+      ligne.append(pp, creerElement("b", "", nom), bt);
+      z.appendChild(ligne);
+    });
+  } catch (e) {
+    z.replaceChildren(creerElement("div", "vide", "Impossible de charger la liste : " + e.message));
+  }
+});
+
+// Déconnexion.
+$("boutonDeconnexion").addEventListener("click", async function () {
+  if (!confirm("Veux-tu vraiment te déconnecter ?")) return;
+
+  this.disabled = true;
+
+  if (window.CacheSelemani) CacheSelemani.viderTout();
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    afficherMessage("Erreur de déconnexion : " + error.message, "erreur");
+    this.disabled = false;
+    return;
+  }
+
+  location.replace("connexion.html");
+});
+
+// Initialisation de la page.
+(async function demarrer() {
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    utilisateurActuel = data.session?.user || null;
+
+    const idUrl = new URLSearchParams(location.search).get("id");
+
+    if (!utilisateurActuel && !idUrl) {
+      $("nom").textContent = "Session non disponible";
+      $("pseudo").textContent = "";
+      $("bio").textContent =
+        "Aucune session active. Connecte-toi, puis reviens sur ton profil.";
+
+      $("boutonModifier").hidden = true;
+      $("boutonDeconnexion").textContent = "Connexion";
+      $("boutonDeconnexion").onclick = () => location.href = "connexion.html";
+
+      document.querySelectorAll('[data-onglet="aimes"],[data-onglet="favoris"]').forEach(x => x.hidden = true);
+
+      grille.replaceChildren(
+        creerElement("div", "vide", "Aucune session active dans ce navigateur.")
+      );
+
+      afficherPhoto("", "S");
+      return;
+    }
+
+    profilId = idUrl || (utilisateurActuel && utilisateurActuel.id);
+    estMoi = Boolean(utilisateurActuel && profilId === utilisateurActuel.id);
+
+    if (estMoi) {
+      $("boutonBloques").hidden = false;
+      await chargerOuCreerMonProfil();
+
+    } else {
+      $("boutonModifier").hidden = true;
+      $("boutonSuivre").hidden = !utilisateurActuel;
+      document.querySelectorAll('[data-onglet="aimes"],[data-onglet="favoris"]').forEach(x => x.hidden = true);
+
+      await chargerProfilVisiteur(profilId);
+    }
+
+    afficherIdentite();
+
+    await Promise.all([chargerOnglet(), chargerStats()]);
+
+    if (!estMoi && utilisateurActuel) {
+      await initialiserAbonnement();
+    }
+
+  } catch (e) {
+    console.error("Erreur profil :", e);
+
+    grille.replaceChildren(
+      creerElement("div", "vide", "Impossible de charger le profil : " + e.message)
+    );
+
+    afficherMessage(
+      "Vérifie la connexion, les tables Supabase et leurs règles RLS.",
+      "erreur"
+    );
+  }
+})();
+</script>
+</body>
+</html>
